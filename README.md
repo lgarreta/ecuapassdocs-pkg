@@ -1,2 +1,2 @@
 # ecuapassdocs-pkg
-ecuapassdocs-pkg
+Ecuapassdocs package
