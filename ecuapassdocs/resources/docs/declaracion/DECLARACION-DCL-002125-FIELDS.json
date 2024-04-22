@@ -1,0 +1,995 @@
+{
+    "00a_Tipo": {
+        "value_type": "string",
+        "value": "Declaraci\u00f3n de Tr\u00e1nsito Aduanero Internacional (DTAI)",
+        "content": "Declaraci\u00f3n de Tr\u00e1nsito Aduanero Internacional (DTAI)",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 3.1803,
+                        "y": 0.3627
+                    },
+                    {
+                        "x": 7.1729,
+                        "y": 0.3724
+                    },
+                    {
+                        "x": 7.1725,
+                        "y": 0.5538
+                    },
+                    {
+                        "x": 3.1799,
+                        "y": 0.5441
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 17,
+                "length": 53
+            }
+        ],
+        "confidence": 0.978
+    },
+    "00b_Numero": {
+        "value_type": "string",
+        "value": "No.002125",
+        "content": "No.002125",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 6.1649,
+                        "y": 0.6588
+                    },
+                    {
+                        "x": 7.4065,
+                        "y": 0.6589
+                    },
+                    {
+                        "x": 7.4065,
+                        "y": 0.8976
+                    },
+                    {
+                        "x": 6.1649,
+                        "y": 0.8975
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 123,
+                "length": 9
+            }
+        ],
+        "confidence": 0.954
+    },
+    "01_Transportista": {
+        "value_type": "string",
+        "value": "NUEVO TRANSPORTE DE AMERICA COMPANIA LIMITADA RUC: 1791834461001",
+        "content": "NUEVO TRANSPORTE DE AMERICA\nCOMPANIA LIMITADA\nRUC: 1791834461001",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 1.7334,
+                        "y": 1.1697
+                    },
+                    {
+                        "x": 4.1449,
+                        "y": 1.1697
+                    },
+                    {
+                        "x": 4.1449,
+                        "y": 1.6042
+                    },
+                    {
+                        "x": 1.7334,
+                        "y": 1.6042
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 205,
+                "length": 27
+            },
+            {
+                "offset": 240,
+                "length": 17
+            },
+            {
+                "offset": 269,
+                "length": 18
+            }
+        ],
+        "confidence": 0.82
+    },
+    "02_Declarante": {
+        "value_type": "string",
+        "value": "NUEVO TRANSPORTE DE AMERICA CIA LTDA LEONIDAS PROANO SN Y PANAMERICANA NORTE CONJUNTO SAN CAMILO II No 118 QUITO - ECUADOR",
+        "content": "NUEVO TRANSPORTE DE AMERICA CIA LTDA\nLEONIDAS PROANO SN Y PANAMERICANA NORTE CONJUNTO\nSAN CAMILO II No 118\nQUITO - ECUADOR",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.4202,
+                        "y": 2.2535
+                    },
+                    {
+                        "x": 4.2643,
+                        "y": 2.2535
+                    },
+                    {
+                        "x": 4.2643,
+                        "y": 2.7118
+                    },
+                    {
+                        "x": 0.4202,
+                        "y": 2.7118
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 933,
+                "length": 122
+            }
+        ],
+        "confidence": 0.782
+    },
+    "03_Remitente": {
+        "value_type": "string",
+        "value": "GIVAUDAN COLOMBIA SAS CARRERA 98 25G-40 BOGOTA COLOMBIA NIT: 830077389-1",
+        "content": "GIVAUDAN COLOMBIA SAS\nCARRERA 98 25G-40\nBOGOTA COLOMBIA NIT: 830077389-1",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.425,
+                        "y": 2.8455
+                    },
+                    {
+                        "x": 2.6121,
+                        "y": 2.8455
+                    },
+                    {
+                        "x": 2.6121,
+                        "y": 3.194
+                    },
+                    {
+                        "x": 0.425,
+                        "y": 3.194
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1175,
+                "length": 72
+            }
+        ],
+        "confidence": 0.92
+    },
+    "04_Destinatario": {
+        "value_type": "string",
+        "value": "EL ALAMO EXPORT S.A.C. LOTES 6,7 Y 14A MZ B LOTE S/N ZONA ESPECIAL DE DESARROLLO PAITA PERU RUC: 20526005610",
+        "content": "EL ALAMO EXPORT S.A.C.\nLOTES 6,7 Y 14A MZ B LOTE S/N ZONA ESPECIAL DE\nDESARROLLO\nPAITA PERU RUC: 20526005610",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.425,
+                        "y": 3.4375
+                    },
+                    {
+                        "x": 4.2357,
+                        "y": 3.4375
+                    },
+                    {
+                        "x": 4.2357,
+                        "y": 3.8958
+                    },
+                    {
+                        "x": 0.425,
+                        "y": 3.8958
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1287,
+                "length": 108
+            }
+        ],
+        "confidence": 0.793
+    },
+    "05_Consignatario": {
+        "value_type": "string",
+        "value": "EL ALAMO EXPORT S.A.C. LOTES 6,7 Y 14A MZ B LOTE S/N ZONA ESPECIAL DE DESARROLLO PAITA PERU RUC: 20526005610",
+        "content": "EL ALAMO EXPORT S.A.C.\nLOTES 6,7 Y 14A MZ B LOTE S/N ZONA ESPECIAL DE\nDESARROLLO\nPAITA PERU RUC: 20526005610",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.425,
+                        "y": 4.0295
+                    },
+                    {
+                        "x": 4.2357,
+                        "y": 4.0295
+                    },
+                    {
+                        "x": 4.2357,
+                        "y": 4.4831
+                    },
+                    {
+                        "x": 0.425,
+                        "y": 4.4831
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1507,
+                "length": 108
+            }
+        ],
+        "confidence": 0.791
+    },
+    "06_Aduana_Carga": {
+        "value_type": "string",
+        "value": "IPIALES - COLOMBIA",
+        "content": "IPIALES - COLOMBIA",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.425,
+                        "y": 4.6693
+                    },
+                    {
+                        "x": 1.6713,
+                        "y": 4.6693
+                    },
+                    {
+                        "x": 1.6713,
+                        "y": 4.7982
+                    },
+                    {
+                        "x": 0.425,
+                        "y": 4.7982
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1761,
+                "length": 18
+            }
+        ],
+        "confidence": 0.981
+    },
+    "07_Aduana_Partida": {
+        "value_type": "string",
+        "value": "IPIALES - COLOMBIA",
+        "content": "IPIALES - COLOMBIA",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.425,
+                        "y": 5.2565
+                    },
+                    {
+                        "x": 1.6713,
+                        "y": 5.2565
+                    },
+                    {
+                        "x": 1.6713,
+                        "y": 5.3902
+                    },
+                    {
+                        "x": 0.425,
+                        "y": 5.3902
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1875,
+                "length": 18
+            }
+        ],
+        "confidence": 0.981
+    },
+    "08_Aduana_Destino": {
+        "value_type": "string",
+        "value": "ZONA ESPECIAL DE DESARROLLO PAITA - PERU",
+        "content": "ZONA ESPECIAL DE DESARROLLO PAITA - PERU",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.4076,
+                        "y": 1.122
+                    },
+                    {
+                        "x": 7.2489,
+                        "y": 1.122
+                    },
+                    {
+                        "x": 7.2489,
+                        "y": 1.2509
+                    },
+                    {
+                        "x": 4.4076,
+                        "y": 1.2509
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 316,
+                "length": 40
+            }
+        ],
+        "confidence": 0.982
+    },
+    "09_Pais_Mercancia": {
+        "value_type": "string",
+        "value": "COLOMBIA",
+        "content": "COLOMBIA",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.4067,
+                        "y": 1.5278
+                    },
+                    {
+                        "x": 5.0713,
+                        "y": 1.523
+                    },
+                    {
+                        "x": 5.0722,
+                        "y": 1.6471
+                    },
+                    {
+                        "x": 4.4076,
+                        "y": 1.6519
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 391,
+                "length": 8
+            }
+        ],
+        "confidence": 0.982
+    },
+    "10_PlacaPais_Vehiculos": {
+        "value_type": "string",
+        "value": "CAA2707 ECUADOR /",
+        "content": "CAA2707 ECUADOR /",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.4028,
+                        "y": 1.8906
+                    },
+                    {
+                        "x": 5.6014,
+                        "y": 1.8906
+                    },
+                    {
+                        "x": 5.6014,
+                        "y": 2.0243
+                    },
+                    {
+                        "x": 4.4028,
+                        "y": 2.0243
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 878,
+                "length": 17
+            }
+        ],
+        "confidence": 0.961
+    },
+    "11_PlacaPais_UnidadesCarga": {
+        "value_type": "string",
+        "value": "PR0630 ECUADOR /",
+        "content": "PR0630 ECUADOR /",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.4028,
+                        "y": 2.6421
+                    },
+                    {
+                        "x": 5.5107,
+                        "y": 2.6354
+                    },
+                    {
+                        "x": 5.5116,
+                        "y": 2.7786
+                    },
+                    {
+                        "x": 4.4036,
+                        "y": 2.7853
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1122,
+                "length": 16
+            }
+        ],
+        "confidence": 0.919
+    },
+    "12_Numeros_Manifiestos": {
+        "value_type": "string",
+        "value": "CO004089 /",
+        "content": "CO004089 /",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.4028,
+                        "y": 3.4846
+                    },
+                    {
+                        "x": 5.0104,
+                        "y": 3.49
+                    },
+                    {
+                        "x": 5.0093,
+                        "y": 3.6147
+                    },
+                    {
+                        "x": 4.4017,
+                        "y": 3.6093
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1456,
+                "length": 10
+            }
+        ],
+        "confidence": 0.729
+    },
+    "13_Ids_Contenedores": {
+        "value_type": "string",
+        "value": "CMAU4039788 (40 PIES)",
+        "content": "CMAU4039788 (40 PIES)",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.4028,
+                        "y": 4.4162
+                    },
+                    {
+                        "x": 5.7208,
+                        "y": 4.4162
+                    },
+                    {
+                        "x": 5.7208,
+                        "y": 4.5499
+                    },
+                    {
+                        "x": 4.4028,
+                        "y": 4.5499
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1739,
+                "length": 21
+            }
+        ],
+        "confidence": 0.983
+    },
+    "14_Numeros_Precintos": {
+        "value_type": "string",
+        "value": "AS&A 0811HJ / AS&A 0816HJ",
+        "content": "AS&A 0811HJ / AS&A 0816HJ",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.4076,
+                        "y": 4.8698
+                    },
+                    {
+                        "x": 6.0169,
+                        "y": 4.8698
+                    },
+                    {
+                        "x": 6.0169,
+                        "y": 4.9987
+                    },
+                    {
+                        "x": 4.4076,
+                        "y": 4.9987
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1821,
+                "length": 25
+            }
+        ],
+        "confidence": 0.939
+    },
+    "15_Cartaporte": {
+        "value_type": "string",
+        "value": "CO003783",
+        "content": "CO003783",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.3534,
+                        "y": 6.0538
+                    },
+                    {
+                        "x": 0.893,
+                        "y": 6.0538
+                    },
+                    {
+                        "x": 0.893,
+                        "y": 6.178
+                    },
+                    {
+                        "x": 0.3534,
+                        "y": 6.178
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2108,
+                "length": 8
+            }
+        ],
+        "confidence": 0.208
+    },
+    "16_Descripcion": {
+        "value_type": "string",
+        "value": "N.T.A. CIA. LTDA.",
+        "content": "N.T.A.\nCIA. LTDA.",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 2.1202,
+                        "y": 6.727
+                    },
+                    {
+                        "x": 4.3025,
+                        "y": 6.727
+                    },
+                    {
+                        "x": 4.3025,
+                        "y": 7.7535
+                    },
+                    {
+                        "x": 2.1202,
+                        "y": 7.7535
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2169,
+                "length": 17
+            }
+        ],
+        "confidence": 0.019
+    },
+    "17_Cantidad_Bultos": {
+        "value_type": "string",
+        "value": "7 PALLETS",
+        "content": "7 PALLETS",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.1176,
+                        "y": 6.0327
+                    },
+                    {
+                        "x": 4.7421,
+                        "y": 6.0588
+                    },
+                    {
+                        "x": 4.7363,
+                        "y": 6.1968
+                    },
+                    {
+                        "x": 4.1118,
+                        "y": 6.1706
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2143,
+                "length": 9
+            }
+        ],
+        "confidence": 0.23
+    },
+    "19a_Peso_Bruto": {
+        "value_type": "string",
+        "value": "5738.88",
+        "content": "5738.88",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 6.1928,
+                        "y": 6.0419
+                    },
+                    {
+                        "x": 6.652,
+                        "y": 6.0395
+                    },
+                    {
+                        "x": 6.6527,
+                        "y": 6.178
+                    },
+                    {
+                        "x": 6.1935,
+                        "y": 6.1804
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2153,
+                "length": 7
+            }
+        ],
+        "confidence": 0.009
+    },
+    "19b_Peso_Neto": {
+        "value_type": "string",
+        "value": "5266.80",
+        "content": "5266.80",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 6.9815,
+                        "y": 6.0419
+                    },
+                    {
+                        "x": 7.4399,
+                        "y": 6.0395
+                    },
+                    {
+                        "x": 7.4406,
+                        "y": 6.178
+                    },
+                    {
+                        "x": 6.9822,
+                        "y": 6.1804
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2161,
+                "length": 7
+            }
+        ],
+        "confidence": 0.009
+    },
+    "19aa_Peso_Bruto_Total": {
+        "value_type": "string",
+        "value": "5738.88",
+        "content": "5738.88",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 6.1935,
+                        "y": 8.8277
+                    },
+                    {
+                        "x": 6.6615,
+                        "y": 8.8277
+                    },
+                    {
+                        "x": 6.6615,
+                        "y": 8.9661
+                    },
+                    {
+                        "x": 6.1935,
+                        "y": 8.9661
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2410,
+                "length": 7
+            }
+        ],
+        "confidence": 0.955
+    },
+    "19bb_Peso_Neto_Total": {
+        "value_type": "string",
+        "value": "5266.8",
+        "content": "5266.8",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 7.0531,
+                        "y": 8.8301
+                    },
+                    {
+                        "x": 7.4455,
+                        "y": 8.8325
+                    },
+                    {
+                        "x": 7.4447,
+                        "y": 8.9709
+                    },
+                    {
+                        "x": 7.0523,
+                        "y": 8.9685
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2418,
+                "length": 6
+            }
+        ],
+        "confidence": 0.947
+    },
+    "20a_Otro_Unidad_Total": {
+        "value_type": "string",
+        "value": "0",
+        "content": "0",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 8.0559,
+                        "y": 8.842
+                    },
+                    {
+                        "x": 8.1132,
+                        "y": 8.842
+                    },
+                    {
+                        "x": 8.1132,
+                        "y": 8.947
+                    },
+                    {
+                        "x": 8.0559,
+                        "y": 8.947
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2425,
+                "length": 1
+            }
+        ],
+        "confidence": 0.855
+    },
+    "21_Incoterms": {
+        "value_type": "string",
+        "value": "USD$ 35112.32DAP PAITA",
+        "content": "USD$ 35112.32DAP PAITA",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.3438,
+                        "y": 8.799
+                    },
+                    {
+                        "x": 1.7525,
+                        "y": 8.799
+                    },
+                    {
+                        "x": 1.7525,
+                        "y": 8.928
+                    },
+                    {
+                        "x": 0.3438,
+                        "y": 8.928
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2271,
+                "length": 22
+            }
+        ],
+        "confidence": 0.97
+    },
+    "22_Aduana_Cruce": {
+        "value_type": "string",
+        "value": "COLOMBIA - IPIALES / ECUADOR - TULCAN - HUAQUILLAS / PERU - TUMBES",
+        "content": "COLOMBIA - IPIALES / ECUADOR\n- TULCAN - HUAQUILLAS / PERU -\nTUMBES",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 3.1756,
+                        "y": 8.7847
+                    },
+                    {
+                        "x": 5.1955,
+                        "y": 8.7847
+                    },
+                    {
+                        "x": 5.1955,
+                        "y": 9.1046
+                    },
+                    {
+                        "x": 3.1756,
+                        "y": 9.1046
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2337,
+                "length": 66
+            }
+        ],
+        "confidence": 0.716
+    },
+    "23_Fecha_Emision": {
+        "value_type": "string",
+        "value": "BOGOTA - COLOMBIA 8-9-2023",
+        "content": "BOGOTA - COLOMBIA 8-9-2023",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.8213,
+                        "y": 10.4032
+                    },
+                    {
+                        "x": 2.593,
+                        "y": 10.4032
+                    },
+                    {
+                        "x": 2.593,
+                        "y": 10.5369
+                    },
+                    {
+                        "x": 0.8213,
+                        "y": 10.5369
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2657,
+                "length": 26
+            }
+        ],
+        "confidence": 0.982
+    },
+    "26_Autoridad_Aduana": {
+        "value_type": "string",
+        "value": null,
+        "content": null,
+        "bounding_regions": [],
+        "spans": [],
+        "confidence": 0.77
+    },
+    "25_Anexos": {
+        "value_type": "string",
+        "value": null,
+        "content": null,
+        "bounding_regions": [],
+        "spans": [],
+        "confidence": 0.83
+    },
+    "18_Marca_Bultos": {
+        "value_type": "string",
+        "value": null,
+        "content": null,
+        "bounding_regions": [],
+        "spans": [],
+        "confidence": 0.994
+    },
+    "24_Observaciones": {
+        "value_type": "string",
+        "value": null,
+        "content": null,
+        "bounding_regions": [],
+        "spans": [],
+        "confidence": 0.845
+    },
+    "20_Otra_Unidad": {
+        "value_type": "string",
+        "value": null,
+        "content": null,
+        "bounding_regions": [],
+        "spans": [],
+        "confidence": 0.994
+    }
+}

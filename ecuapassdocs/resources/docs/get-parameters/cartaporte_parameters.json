@@ -1,0 +1,35 @@
+{
+	"input_numero" : { 
+		"maxLines" : 1, "maxChars" : 10, "fontSize" : "26px" 
+	},
+	"input_empresa" : { 
+		"maxLines" : 4, "maxChars" : 50, "fontSize" : "14px" 
+	},
+	"input_lugar" : { 
+		"maxLines" : 2, "maxChars" : 50, "fontSize" : "14px" 
+	},
+	"input_general" : { 
+		"maxLines" : 1, "maxChars" : 8, "fontSize" : "14px" 
+	},
+	"input_condiciones" : { 
+		"maxLines" : 4, "maxChars" : 8, "fontSize" : "14px" 
+	},
+	"input_bultos" : { 
+		"maxLines" : 18, "maxChars" : 10, "fontSize" : "14px" 
+	},
+	"input_descripcion" : { 
+		"maxLines" : 18, "maxChars" : 50, "fontSize" : "14px" 
+	},
+	"input_valor" : { 
+		"maxLines" : 1, "maxChars" : 10, "fontSize" : "14px", "align":"right" 
+	},
+	"input_incoterm" : {
+		"maxLines" : 3, "maxChars" : 50, "fontSize" : "14px" 
+	},
+	"input_documento" : {
+		"maxLines" : 2, "maxChars" : 50, "fontSize" : "14px" 
+	},
+	"input_tipo" : { 
+		"maxLines" : 1, "maxChars" : 10, "fontSize" : "26px", "align": "center"
+	}
+}

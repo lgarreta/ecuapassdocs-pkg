@@ -1,0 +1,1684 @@
+{
+    "13_Conductor_Nombre": {
+        "value_type": "string",
+        "value": "HUERTAS FUEL JORGE 20-04-1978",
+        "content": "HUERTAS FUEL JORGE 20-04-1978",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.385,
+                        "y": 4.005
+                    },
+                    {
+                        "x": 2.47,
+                        "y": 4.005
+                    },
+                    {
+                        "x": 2.47,
+                        "y": 4.14
+                    },
+                    {
+                        "x": 0.385,
+                        "y": 4.14
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1285,
+                "length": 29
+            }
+        ],
+        "confidence": 0.99
+    },
+    "12_Remolque_Otro": {
+        "value_type": "string",
+        "value": "XXXXXXXXXXX",
+        "content": "XXXXXXXXXXX",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 5.835,
+                        "y": 3.56
+                    },
+                    {
+                        "x": 6.81,
+                        "y": 3.56
+                    },
+                    {
+                        "x": 6.81,
+                        "y": 3.685
+                    },
+                    {
+                        "x": 5.835,
+                        "y": 3.685
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1186,
+                "length": 11
+            }
+        ],
+        "confidence": 0.991
+    },
+    "11_Remolque_PlacaPais": {
+        "value_type": "string",
+        "value": "XXXXXXXXX",
+        "content": "XXXXXXXXX",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 3.59,
+                        "y": 3.555
+                    },
+                    {
+                        "x": 4.39,
+                        "y": 3.555
+                    },
+                    {
+                        "x": 4.39,
+                        "y": 3.695
+                    },
+                    {
+                        "x": 3.59,
+                        "y": 3.695
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1198,
+                "length": 9
+            }
+        ],
+        "confidence": 0.99
+    },
+    "25b_Carga_TipoSustancias": {
+        "value_type": "string",
+        "value": "B.Sustancias qu\u00edmicas o precursoras",
+        "content": "B.Sustancias qu\u00edmicas o precursoras",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 1.645,
+                        "y": 5.54
+                    },
+                    {
+                        "x": 3.26,
+                        "y": 5.54
+                    },
+                    {
+                        "x": 3.26,
+                        "y": 5.66
+                    },
+                    {
+                        "x": 1.645,
+                        "y": 5.66
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1727,
+                "length": 35
+            }
+        ],
+        "confidence": 0.99
+    },
+    "04_Camion_Marca": {
+        "value_type": "string",
+        "value": "CHEVROLET",
+        "content": "CHEVROLET",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.385,
+                        "y": 2.845
+                    },
+                    {
+                        "x": 1.19,
+                        "y": 2.845
+                    },
+                    {
+                        "x": 1.19,
+                        "y": 2.97
+                    },
+                    {
+                        "x": 0.385,
+                        "y": 2.97
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 889,
+                "length": 9
+            }
+        ],
+        "confidence": 0.99
+    },
+    "37_Aduana_Cruce": {
+        "value_type": "string",
+        "value": "IPIALES - COLOMBIA",
+        "content": "IPIALES - COLOMBIA",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.09,
+                        "y": 9.675
+                    },
+                    {
+                        "x": 5.135,
+                        "y": 9.675
+                    },
+                    {
+                        "x": 5.135,
+                        "y": 9.785
+                    },
+                    {
+                        "x": 4.09,
+                        "y": 9.785
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2709,
+                "length": 18
+            }
+        ],
+        "confidence": 0.99
+    },
+    "00a_Tipo": {
+        "value_type": "string",
+        "value": "Manifiesto de Carga Internacional (MCI)",
+        "content": "Manifiesto de Carga Internacional (MCI)",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 3.695,
+                        "y": 0.37
+                    },
+                    {
+                        "x": 6.58,
+                        "y": 0.37
+                    },
+                    {
+                        "x": 6.58,
+                        "y": 0.555
+                    },
+                    {
+                        "x": 3.695,
+                        "y": 0.555
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 0,
+                "length": 39
+            }
+        ],
+        "confidence": 0.99
+    },
+    "06_Camion_PlacaPais": {
+        "value_type": "string",
+        "value": "PBM5476 ECUADOR",
+        "content": "PBM5476 ECUADOR",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 3.57,
+                        "y": 2.84
+                    },
+                    {
+                        "x": 4.75,
+                        "y": 2.84
+                    },
+                    {
+                        "x": 4.75,
+                        "y": 2.975
+                    },
+                    {
+                        "x": 3.57,
+                        "y": 2.975
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 940,
+                "length": 15
+            }
+        ],
+        "confidence": 0.99
+    },
+    "31_Mercancia_Embalaje": {
+        "value_type": "string",
+        "value": "SIMPLICOL SAS",
+        "content": "SIMPLICOL SAS",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.97,
+                        "y": 6.6
+                    },
+                    {
+                        "x": 5.73,
+                        "y": 6.6
+                    },
+                    {
+                        "x": 5.73,
+                        "y": 6.705
+                    },
+                    {
+                        "x": 4.97,
+                        "y": 6.705
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2273,
+                "length": 13
+            }
+        ],
+        "confidence": 0.99
+    },
+    "07_Camion_Chasis": {
+        "value_type": "string",
+        "value": "9GDN1R718AB178375",
+        "content": "9GDN1R718AB178375",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 5.815,
+                        "y": 2.835
+                    },
+                    {
+                        "x": 7.055,
+                        "y": 2.835
+                    },
+                    {
+                        "x": 7.055,
+                        "y": 2.97
+                    },
+                    {
+                        "x": 5.815,
+                        "y": 2.97
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 983,
+                "length": 17
+            }
+        ],
+        "confidence": 0.99
+    },
+    "40_Fecha_Emision": {
+        "value_type": "string",
+        "value": "IPIALES- COLOMBIA 25-9-2023",
+        "content": "IPIALES- COLOMBIA 25-9-2023",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 1.33,
+                        "y": 10.525
+                    },
+                    {
+                        "x": 2.76,
+                        "y": 10.525
+                    },
+                    {
+                        "x": 2.76,
+                        "y": 10.625
+                    },
+                    {
+                        "x": 1.33,
+                        "y": 10.625
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 3119,
+                "length": 27
+            }
+        ],
+        "confidence": 0.99
+    },
+    "01a_Transportista_Nombre": {
+        "value_type": "string",
+        "value": "NUEVO TRANSPORTE DE AMERICA COMPA\u00d1IA LIMITADA",
+        "content": "NUEVO TRANSPORTE DE AMERICA\nCOMPA\u00d1IA LIMITADA",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 1.735,
+                        "y": 1.285
+                    },
+                    {
+                        "x": 4.14,
+                        "y": 1.285
+                    },
+                    {
+                        "x": 4.14,
+                        "y": 1.565
+                    },
+                    {
+                        "x": 1.735,
+                        "y": 1.565
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 188,
+                "length": 45
+            }
+        ],
+        "confidence": 0.99
+    },
+    "19_Auxiliar_Id": {
+        "value_type": "string",
+        "value": "XXX",
+        "content": "XXX",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.145,
+                        "y": 4.365
+                    },
+                    {
+                        "x": 4.45,
+                        "y": 4.365
+                    },
+                    {
+                        "x": 4.45,
+                        "y": 4.485
+                    },
+                    {
+                        "x": 4.145,
+                        "y": 4.485
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1464,
+                "length": 3
+            }
+        ],
+        "confidence": 0.99
+    },
+    "23_Carga_CiudadPais": {
+        "value_type": "string",
+        "value": "IPIALES - COLOMBIA",
+        "content": "IPIALES - COLOMBIA",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.385,
+                        "y": 5.17
+                    },
+                    {
+                        "x": 1.685,
+                        "y": 5.17
+                    },
+                    {
+                        "x": 1.685,
+                        "y": 5.295
+                    },
+                    {
+                        "x": 0.385,
+                        "y": 5.295
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1666,
+                "length": 18
+            }
+        ],
+        "confidence": 0.978
+    },
+    "33_Otra_MedidaTotal": {
+        "value_type": "string",
+        "value": "0",
+        "content": "0",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 7.75,
+                        "y": 9.4
+                    },
+                    {
+                        "x": 7.8,
+                        "y": 9.4
+                    },
+                    {
+                        "x": 7.8,
+                        "y": 9.48
+                    },
+                    {
+                        "x": 7.75,
+                        "y": 9.48
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2675,
+                "length": 1
+            }
+        ],
+        "confidence": 0.99
+    },
+    "17_Conductor_Libreta": {
+        "value_type": "string",
+        "value": "N/A",
+        "content": "N/A",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 2.115,
+                        "y": 4.72
+                    },
+                    {
+                        "x": 2.315,
+                        "y": 4.72
+                    },
+                    {
+                        "x": 2.315,
+                        "y": 4.83
+                    },
+                    {
+                        "x": 2.115,
+                        "y": 4.83
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1564,
+                "length": 3
+            }
+        ],
+        "confidence": 0.992
+    },
+    "30_Mercancia_Bultos": {
+        "value_type": "string",
+        "value": "22 CANECAS",
+        "content": "22 CANECAS",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.07,
+                        "y": 6.6
+                    },
+                    {
+                        "x": 4.66,
+                        "y": 6.6
+                    },
+                    {
+                        "x": 4.66,
+                        "y": 6.705
+                    },
+                    {
+                        "x": 4.07,
+                        "y": 6.705
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2262,
+                "length": 10
+            }
+        ],
+        "confidence": 0.944
+    },
+    "29_Mercancia_Descripcion": {
+        "value_type": "string",
+        "value": "TINTA: AZUL ANILCONYL , REMITE: SIMPLICOL SAS DESTINO : INDUSTRIAS ALES CA INGRESAR A : BODEGAS ADUANOR MRN:CEC202340351181 SAE: 6027717724401 N.T.A. CIA. LTDA.",
+        "content": "TINTA: AZUL ANILCONYL ,\nREMITE: SIMPLICOL SAS\nDESTINO : INDUSTRIAS ALES CA\nINGRESAR A : BODEGAS ADUANOR\nMRN:CEC202340351181\nSAE: 6027717724401\nN.T.A.\nCIA. LTDA.",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 1.205,
+                        "y": 6.595
+                    },
+                    {
+                        "x": 4.26,
+                        "y": 6.595
+                    },
+                    {
+                        "x": 4.26,
+                        "y": 8.425
+                    },
+                    {
+                        "x": 1.205,
+                        "y": 8.425
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2238,
+                "length": 23
+            },
+            {
+                "offset": 2301,
+                "length": 136
+            }
+        ],
+        "confidence": 0.981
+    },
+    "02_Permiso_Originario": {
+        "value_type": "string",
+        "value": "C.I .- E.C .- 0060-04",
+        "content": "C.I .- E.C .- 0060-04",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 5.51,
+                        "y": 1.335
+                    },
+                    {
+                        "x": 6.925,
+                        "y": 1.335
+                    },
+                    {
+                        "x": 6.925,
+                        "y": 1.525
+                    },
+                    {
+                        "x": 5.51,
+                        "y": 1.525
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 294,
+                "length": 21
+            }
+        ],
+        "confidence": 0.99
+    },
+    "32b_Peso_Neto": {
+        "value_type": "string",
+        "value": "660.00",
+        "content": "660.00",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 7.045,
+                        "y": 6.59
+                    },
+                    {
+                        "x": 7.4,
+                        "y": 6.59
+                    },
+                    {
+                        "x": 7.4,
+                        "y": 6.705
+                    },
+                    {
+                        "x": 7.045,
+                        "y": 6.705
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2294,
+                "length": 6
+            }
+        ],
+        "confidence": 0.99
+    },
+    "10_Remolque_AnoFabricacion": {
+        "value_type": "string",
+        "value": "XXXX",
+        "content": "XXXX",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 2.43,
+                        "y": 3.56
+                    },
+                    {
+                        "x": 2.775,
+                        "y": 3.56
+                    },
+                    {
+                        "x": 2.775,
+                        "y": 3.685
+                    },
+                    {
+                        "x": 2.43,
+                        "y": 3.685
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1172,
+                "length": 4
+            }
+        ],
+        "confidence": 0.99
+    },
+    "08_Certificado_Habilitacion": {
+        "value_type": "string",
+        "value": "CH-EC-12136-21",
+        "content": "CH-EC-12136-21",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 2.08,
+                        "y": 3.055
+                    },
+                    {
+                        "x": 3.01,
+                        "y": 3.055
+                    },
+                    {
+                        "x": 3.01,
+                        "y": 3.2
+                    },
+                    {
+                        "x": 2.08,
+                        "y": 3.2
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1035,
+                "length": 14
+            }
+        ],
+        "confidence": 0.99
+    },
+    "35_Observaciones": {
+        "value_type": "string",
+        "value": null,
+        "content": null,
+        "bounding_regions": [],
+        "spans": [],
+        "confidence": 0.955
+    },
+    "25e_Carga_TipoDescripcion": {
+        "value_type": "string",
+        "value": "N/A",
+        "content": "N/A",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 7.805,
+                        "y": 5.69
+                    },
+                    {
+                        "x": 8.015,
+                        "y": 5.69
+                    },
+                    {
+                        "x": 8.015,
+                        "y": 5.81
+                    },
+                    {
+                        "x": 7.805,
+                        "y": 5.81
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1864,
+                "length": 3
+            }
+        ],
+        "confidence": 0.99
+    },
+    "14_Conductor_Id": {
+        "value_type": "string",
+        "value": "0401292875",
+        "content": "0401292875",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.385,
+                        "y": 4.36
+                    },
+                    {
+                        "x": 1.015,
+                        "y": 4.36
+                    },
+                    {
+                        "x": 1.015,
+                        "y": 4.49
+                    },
+                    {
+                        "x": 0.385,
+                        "y": 4.49
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1396,
+                "length": 10
+            }
+        ],
+        "confidence": 0.992
+    },
+    "18_Auxiliar_Nombre": {
+        "value_type": "string",
+        "value": "NO TIENE",
+        "content": "NO TIENE",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.12,
+                        "y": 4.01
+                    },
+                    {
+                        "x": 4.72,
+                        "y": 4.01
+                    },
+                    {
+                        "x": 4.72,
+                        "y": 4.13
+                    },
+                    {
+                        "x": 4.12,
+                        "y": 4.13
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1358,
+                "length": 8
+            }
+        ],
+        "confidence": 0.99
+    },
+    "34_Precio_Incoterm_Moneda": {
+        "value_type": "string",
+        "value": "8844.00 USD FCA IPIALES",
+        "content": "8844.00 USD FCA IPIALES",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.47,
+                        "y": 9.44
+                    },
+                    {
+                        "x": 1.675,
+                        "y": 9.44
+                    },
+                    {
+                        "x": 1.675,
+                        "y": 9.545
+                    },
+                    {
+                        "x": 0.47,
+                        "y": 9.545
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2521,
+                "length": 23
+            }
+        ],
+        "confidence": 0.99
+    },
+    "01b_Transportista_Id": {
+        "value_type": "string",
+        "value": "RUC: 1791834461001",
+        "content": "RUC: 1791834461001",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 2.39,
+                        "y": 1.585
+                    },
+                    {
+                        "x": 3.505,
+                        "y": 1.585
+                    },
+                    {
+                        "x": 3.505,
+                        "y": 1.72
+                    },
+                    {
+                        "x": 2.39,
+                        "y": 1.72
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 234,
+                "length": 18
+            }
+        ],
+        "confidence": 0.541
+    },
+    "25d_Carga_TipoOtra": {
+        "value_type": "string",
+        "value": "D.Otra X (especificar)",
+        "content": "D.Otra X (especificar)",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 5.03,
+                        "y": 5.545
+                    },
+                    {
+                        "x": 6.1,
+                        "y": 5.545
+                    },
+                    {
+                        "x": 6.1,
+                        "y": 5.66
+                    },
+                    {
+                        "x": 5.03,
+                        "y": 5.66
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1841,
+                "length": 22
+            }
+        ],
+        "confidence": 0.547
+    },
+    "32b_Peso_NetoTotal": {
+        "value_type": "string",
+        "value": "660",
+        "content": "660",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 7.21,
+                        "y": 9.375
+                    },
+                    {
+                        "x": 7.395,
+                        "y": 9.375
+                    },
+                    {
+                        "x": 7.395,
+                        "y": 9.48
+                    },
+                    {
+                        "x": 7.21,
+                        "y": 9.48
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2671,
+                "length": 3
+            }
+        ],
+        "confidence": 0.983
+    },
+    "27_Carga_Precintos": {
+        "value_type": "string",
+        "value": "N/A",
+        "content": "N/A",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.13,
+                        "y": 6.12
+                    },
+                    {
+                        "x": 4.32,
+                        "y": 6.12
+                    },
+                    {
+                        "x": 4.32,
+                        "y": 6.23
+                    },
+                    {
+                        "x": 4.13,
+                        "y": 6.23
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2016,
+                "length": 3
+            }
+        ],
+        "confidence": 0.994
+    },
+    "09_Remolque_Marca": {
+        "value_type": "string",
+        "value": "XXXXXXXXXXX",
+        "content": "XXXXXXXXXXX",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.4,
+                        "y": 3.56
+                    },
+                    {
+                        "x": 1.38,
+                        "y": 3.56
+                    },
+                    {
+                        "x": 1.38,
+                        "y": 3.685
+                    },
+                    {
+                        "x": 0.4,
+                        "y": 3.685
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1122,
+                "length": 11
+            }
+        ],
+        "confidence": 0.99
+    },
+    "32a_Peso_BrutoTotal": {
+        "value_type": "string",
+        "value": "706.20",
+        "content": "706.20",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 6.35,
+                        "y": 9.375
+                    },
+                    {
+                        "x": 6.685,
+                        "y": 9.375
+                    },
+                    {
+                        "x": 6.685,
+                        "y": 9.49
+                    },
+                    {
+                        "x": 6.35,
+                        "y": 9.49
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2664,
+                "length": 6
+            }
+        ],
+        "confidence": 0.992
+    },
+    "26_Carga_Contenedores": {
+        "value_type": "string",
+        "value": "N/A",
+        "content": "N/A",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.38,
+                        "y": 6.115
+                    },
+                    {
+                        "x": 0.585,
+                        "y": 6.115
+                    },
+                    {
+                        "x": 0.585,
+                        "y": 6.23
+                    },
+                    {
+                        "x": 0.38,
+                        "y": 6.23
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1971,
+                "length": 3
+            }
+        ],
+        "confidence": 0.787
+    },
+    "16_Conductor_Licencia": {
+        "value_type": "string",
+        "value": "0401292875",
+        "content": "0401292875",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.38,
+                        "y": 4.715
+                    },
+                    {
+                        "x": 1.015,
+                        "y": 4.715
+                    },
+                    {
+                        "x": 1.015,
+                        "y": 4.84
+                    },
+                    {
+                        "x": 0.38,
+                        "y": 4.84
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1515,
+                "length": 10
+            }
+        ],
+        "confidence": 0.992
+    },
+    "38_Aduana_Destino": {
+        "value_type": "string",
+        "value": "TULCAN - ECUADOR",
+        "content": "TULCAN - ECUADOR",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 6.145,
+                        "y": 9.675
+                    },
+                    {
+                        "x": 7.135,
+                        "y": 9.675
+                    },
+                    {
+                        "x": 7.135,
+                        "y": 9.785
+                    },
+                    {
+                        "x": 6.145,
+                        "y": 9.785
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2749,
+                "length": 16
+            }
+        ],
+        "confidence": 0.99
+    },
+    "24_Descarga_CiudadPais": {
+        "value_type": "string",
+        "value": "TULCAN - ECUADOR",
+        "content": "TULCAN - ECUADOR",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.145,
+                        "y": 5.165
+                    },
+                    {
+                        "x": 5.37,
+                        "y": 5.165
+                    },
+                    {
+                        "x": 5.37,
+                        "y": 5.3
+                    },
+                    {
+                        "x": 4.145,
+                        "y": 5.3
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1812,
+                "length": 16
+            }
+        ],
+        "confidence": 0.99
+    },
+    "21_Auxiliar_Licencia": {
+        "value_type": "string",
+        "value": "XXX",
+        "content": "XXX",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 4.14,
+                        "y": 4.725
+                    },
+                    {
+                        "x": 4.455,
+                        "y": 4.725
+                    },
+                    {
+                        "x": 4.455,
+                        "y": 4.835
+                    },
+                    {
+                        "x": 4.14,
+                        "y": 4.835
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1595,
+                "length": 3
+            }
+        ],
+        "confidence": 0.992
+    },
+    "03_Permiso_Servicios": {
+        "value_type": "string",
+        "value": "P.P.S .- CO-0159-05 P.P.S .- PE-0002-10",
+        "content": "P.P.S .- CO-0159-05\nP.P.S .- PE-0002-10",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 5.495,
+                        "y": 2.0
+                    },
+                    {
+                        "x": 7.07,
+                        "y": 2.0
+                    },
+                    {
+                        "x": 7.07,
+                        "y": 2.465
+                    },
+                    {
+                        "x": 5.495,
+                        "y": 2.465
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 356,
+                "length": 39
+            }
+        ],
+        "confidence": 0.99
+    },
+    "28_Mercancia_Cartaporte": {
+        "value_type": "string",
+        "value": "CO003820",
+        "content": "CO003820",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.33,
+                        "y": 6.59
+                    },
+                    {
+                        "x": 0.775,
+                        "y": 6.59
+                    },
+                    {
+                        "x": 0.775,
+                        "y": 6.69
+                    },
+                    {
+                        "x": 0.33,
+                        "y": 6.69
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2229,
+                "length": 8
+            }
+        ],
+        "confidence": 0.958
+    },
+    "25c_Carga_TipoPerecible": {
+        "value_type": "string",
+        "value": "C.Perecible",
+        "content": "C.Perecible",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 3.85,
+                        "y": 5.545
+                    },
+                    {
+                        "x": 4.355,
+                        "y": 5.545
+                    },
+                    {
+                        "x": 4.355,
+                        "y": 5.645
+                    },
+                    {
+                        "x": 3.85,
+                        "y": 5.645
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1829,
+                "length": 11
+            }
+        ],
+        "confidence": 0.99
+    },
+    "22_Auxiliar_Libreta": {
+        "value_type": "string",
+        "value": "XXX",
+        "content": "XXX",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 6.19,
+                        "y": 4.72
+                    },
+                    {
+                        "x": 6.5,
+                        "y": 4.72
+                    },
+                    {
+                        "x": 6.5,
+                        "y": 4.83
+                    },
+                    {
+                        "x": 6.19,
+                        "y": 4.83
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1637,
+                "length": 3
+            }
+        ],
+        "confidence": 0.992
+    },
+    "33_Otra_Medida": {
+        "value_type": "string",
+        "value": null,
+        "content": null,
+        "bounding_regions": [],
+        "spans": [],
+        "confidence": 0.955
+    },
+    "25a_Carga_TipoPeligrosa": {
+        "value_type": "string",
+        "value": "A.Peligrosa",
+        "content": "A.Peligrosa",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 0.585,
+                        "y": 5.545
+                    },
+                    {
+                        "x": 1.09,
+                        "y": 5.545
+                    },
+                    {
+                        "x": 1.09,
+                        "y": 5.655
+                    },
+                    {
+                        "x": 0.585,
+                        "y": 5.655
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1715,
+                "length": 11
+            }
+        ],
+        "confidence": 0.99
+    },
+    "39_Firma_Transportista": {
+        "value_type": "string",
+        "value": null,
+        "content": null,
+        "bounding_regions": [],
+        "spans": [],
+        "confidence": 0.955
+    },
+    "00b_Numero": {
+        "value_type": "string",
+        "value": "CO004121",
+        "content": "CO004121",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 6.45,
+                        "y": 0.685
+                    },
+                    {
+                        "x": 7.505,
+                        "y": 0.685
+                    },
+                    {
+                        "x": 7.505,
+                        "y": 0.89
+                    },
+                    {
+                        "x": 6.45,
+                        "y": 0.89
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 64,
+                "length": 8
+            }
+        ],
+        "confidence": 0.98
+    },
+    "32a_Peso_Bruto": {
+        "value_type": "string",
+        "value": "706.20",
+        "content": "706.20",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 6.345,
+                        "y": 6.59
+                    },
+                    {
+                        "x": 6.69,
+                        "y": 6.59
+                    },
+                    {
+                        "x": 6.69,
+                        "y": 6.705
+                    },
+                    {
+                        "x": 6.345,
+                        "y": 6.705
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 2287,
+                "length": 6
+            }
+        ],
+        "confidence": 0.99
+    },
+    "15_Conductor_Nacionalidad": {
+        "value_type": "string",
+        "value": "ECUATORIANA",
+        "content": "ECUATORIANA",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 2.12,
+                        "y": 4.365
+                    },
+                    {
+                        "x": 3.045,
+                        "y": 4.365
+                    },
+                    {
+                        "x": 3.045,
+                        "y": 4.49
+                    },
+                    {
+                        "x": 2.12,
+                        "y": 4.49
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1423,
+                "length": 11
+            }
+        ],
+        "confidence": 0.99
+    },
+    "20_Auxiliar_Nacionalidad": {
+        "value_type": "string",
+        "value": "XXX",
+        "content": "XXX",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 6.19,
+                        "y": 4.37
+                    },
+                    {
+                        "x": 6.5,
+                        "y": 4.37
+                    },
+                    {
+                        "x": 6.5,
+                        "y": 4.485
+                    },
+                    {
+                        "x": 6.19,
+                        "y": 4.485
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 1484,
+                "length": 3
+            }
+        ],
+        "confidence": 0.992
+    },
+    "05_Camion_AnoFabricacion": {
+        "value_type": "string",
+        "value": "2010",
+        "content": "2010",
+        "bounding_regions": [
+            {
+                "page_number": 1,
+                "polygon": [
+                    {
+                        "x": 2.44,
+                        "y": 2.845
+                    },
+                    {
+                        "x": 2.69,
+                        "y": 2.845
+                    },
+                    {
+                        "x": 2.69,
+                        "y": 2.96
+                    },
+                    {
+                        "x": 2.44,
+                        "y": 2.96
+                    }
+                ]
+            }
+        ],
+        "spans": [
+            {
+                "offset": 920,
+                "length": 4
+            }
+        ],
+        "confidence": 0.99
+    },
+    "36_Firma_Aduana": {
+        "value_type": "string",
+        "value": null,
+        "content": null,
+        "bounding_regions": [],
+        "spans": [],
+        "confidence": 0.955
+    },
+    "00_Pais": "colombia"
+}

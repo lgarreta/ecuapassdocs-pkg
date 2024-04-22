@@ -1,0 +1,1 @@
+/home/lg/BIO/iaprojects/ecuapassdocs/apps/docsCreacion/gui/src/main/DocPanelCartaporte.java

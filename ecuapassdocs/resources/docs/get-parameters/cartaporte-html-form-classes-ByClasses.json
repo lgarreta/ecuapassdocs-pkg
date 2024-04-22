@@ -1,0 +1,65 @@
+{
+    "input_numero": [
+        "txt00",
+        "txt01"
+    ],
+    "input_empresa": [
+        "txt02",
+        "txt03",
+        "txt04",
+        "txt05"
+    ],
+    "input_lugar": [
+        "txt06",
+        "txt07",
+        "txt08",
+        "txt19"
+    ],
+    "input_condiciones": [
+        "txt09"
+    ],
+    "input_bultos": [
+        "txt10",
+        "txt11"
+    ],
+    "input_descripcion": [
+        "txt12"
+    ],
+    "input_valor": [
+        "txt13_1",
+        "txt13_2",
+        "txt14",
+        "txt15",
+        "txt17_11",
+        "txt17_12",
+        "txt17_13",
+        "txt17_14",
+        "txt17_31",
+        "txt17_32",
+        "txt17_33",
+        "txt17_34"
+    ],
+    "input_incoterm": [
+        "txt16"
+    ],
+    "input_general": [
+        "txt17_21",
+        "txt17_22",
+        "txt17_23",
+        "txt17_24",
+        "txt17_41",
+        "txt17_42",
+        "txt17_43",
+        "txt17_44",
+        "txt20",
+        "txt21",
+        "txt22",
+        "txt23"
+    ],
+    "input_documento": [
+        "txt18"
+    ],
+    "input_tipo": [
+        "txt24"
+    ]
+}
