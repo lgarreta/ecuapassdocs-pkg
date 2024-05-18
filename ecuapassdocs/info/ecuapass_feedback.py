@@ -37,9 +37,6 @@ class EcuFeedback:
 	def getConnectionString ():
 		azrKeys = ["DefaultEndpointsProtocol", "AccountName", "AccountKey", "EndpointSuffix"]
 		azrInfo = ["https", "lgformsstorage",
-			 "BHsWkVaWQYStRq8FOpoIl0jI39W+WFvrSJ",
-			 "mxesr0euIEJe+qkSi0LoTM0HZfyOn2XbYfn",
-			 "Hir7CD8+ASt6ZJnwg==",
 			 "core.windows.net"]
 
 		connStr = ""
