@@ -56,7 +56,7 @@ class CartaporteInfo (EcuInfo):
 			remitente                             = Utils.checkLow (self.getSubjectInfo ("02_Remitente"))
 			self.ecudoc ["10_PaisRemitente"]      = remitente ["pais"]
 			self.ecudoc ["11_TipoIdRemitente"]    = remitente ["tipoId"]
-			self.ecudoc ["12_NroIdRemitente"]	  = remitente ["numeroId"]
+			self.ecudoc ["12_NroIdRemitente"]	    = remitente ["numeroId"]
 			self.ecudoc ["13_NroCertSanitario"]	  = None
 			self.ecudoc ["14_NombreRemitente"]    = remitente ["nombre"]
 			self.ecudoc ["15_DireccionRemitente"] = remitente ["direccion"]
@@ -112,7 +112,7 @@ class CartaporteInfo (EcuInfo):
 			self.ecudoc ["39_CondicionesPago"]       = condiciones ["pago"]
 
 			unidades                       = self.getUnidadesMedidaInfo ()
-			bultosInfo                         = self.getBultosInfo ()
+			bultosInfo                     = self.getBultosInfo ()
 			self.ecudoc ["40_PesoNeto"]	   = unidades ["pesoNeto"]
 			self.ecudoc ["41_PesoBruto"]   = unidades ["pesoBruto"]
 			self.ecudoc ["42_TotalBultos"] = bultosInfo ["cantidad"]
@@ -184,14 +184,6 @@ class CartaporteInfo (EcuInfo):
 		return (self.ecudoc)
 
 	#------------------------------------------------------------------
-	#-- Updated document fields with processed ecufields
-	#------------------------------------------------------------------
-	def updateFields (self):
-			# Update fields
-			self.fields ["12_Descripcion_Bultos"]["content"] = self.ecudoc ["79_DescripcionCarga"]
-			return self.fields
-
-	#------------------------------------------------------------------
 	#-- First level functions for each Ecuapass field
 	#------------------------------------------------------------------
 	def getDistrito (self):
@@ -208,6 +200,12 @@ class CartaporteInfo (EcuInfo):
 	def getNombreEmpresa (self):
 		return self.empresa ["nombre"]
 
+	def getDireccionEmpresa (self):
+		return self.empresa ["direccion"]
+
+	def getIdEmpresa (self):
+		id = self.empresa ["idNumero"]
+		return id
 	#------------------------------------------------------------
 	# Return the code number from the text matching a "deposito"
 	#-- BOTERO-SOTO en casilla 21 o 22, NTA en la 22 ------------
@@ -217,59 +215,31 @@ class CartaporteInfo (EcuInfo):
 			text = ""
 			try:
 				text        = Utils.getValue (self.fields, casilla)
-				reBodega    = r'BODEGA[S]?\s+\b(\w*)\b'
+				reWordSep  = r'\s+(?:EL\s+)?'
+				#reBodega    = rf'BODEGA[S]?\s+\b(\w*)\b'
+				reBodega    = rf'BODEGA[S]?{reWordSep}\b(\w*)\b'
 				bodegaText  = Extractor.getValueRE (reBodega, text)
 				Utils.printx (f"Extrayendo código para el deposito '{bodegaText}'")
+				if bodegaText == None:
+					return None
 
 				depositosDic = Extractor.getDataDic ("depositos_tulcan.txt", self.resourcesPath)
-
+				
 				for id in depositosDic:
 					if bodegaText in depositosDic [id]:
 						Utils.printx (f"...Encontrado código '{id}' para '{depositosDic [id]}'")
 						return id
 			except:
-				Utils.printException (f"EXCEPCION: Obteniendo bodega desde texto '{text}'")
+				Utils.printException (f"Obteniendo bodega desde texto '{text}'")
 		return "||LOW"
 
-	def old_getDepositoMercancia (self):
-		for casilla in ["21_Instrucciones", "22_Observaciones"]:
-			try:
-				text        = Utils.getValue (self.fields, casilla)
-				reBodega    = r'BODEGA[S]?\s+\b(\w*)\b'
-				bodegaText  = Extractor.getValueRE (reBodega, text)
-
-				bodegasString = Extractor.getDataString ("depositos_tulcan.txt", self.resourcesPath)
-				for bodegaFullname in bodegasString.split ("|"):
-					#Utils.printx (f"Bodega texto: '{bodegaText}', BodegaFullname: '{bodegaFullname}'")
-					if bodegaText in bodegaFullname:
-						return bodegaFullname
-			except:
-				Utils.printx (f"EXCEPCION: Obteniendo bodega desde texto '{text}'")
-		return "||LOW"
-
-	def getDireccionEmpresa (self):
-		return self.empresa ["direccion"]
-
-	def getIdEmpresa (self):
-		id = Utils.convertToEcuapassId (self.empresa ["idNumero"])
-		return id
 	#-------------------------------------------------------------------
 	#-- Get location info: ciudad, pais, fecha -------------------------
 	#-- Boxes: Recepcion, Embarque, Entrega ----------------------------
 	#-------------------------------------------------------------------
 	def getLocationInfo (self, key):
-		location = {"ciudad":"||LOW", "pais":"||LOW", "fecha":"||LOW"}
-		try:
-			text   = Utils.getValue (self.fields, key)
-			text   = text.replace ("\n", " ")
-			# Fecha
-			fecha = Extractor.getDate (text, self.resourcesPath)
-			location ["fecha"] = fecha if fecha else "||LOW"
-			# Pais
-			text, location = Extractor.removeSubjectCiudadPais (text, location, self.resourcesPath, key)
-		except:
-			Utils.printException (f"Obteniendo datos de lo localización: '{key}' en el texto", text)
-
+		text   = Utils.getValue (self.fields, key)
+		location = Extractor.extractLocationDate (text, self.resourcesPath, key)
 		return (location)
 
 	#-----------------------------------------------------------
@@ -281,7 +251,6 @@ class CartaporteInfo (EcuInfo):
 			# Add a week to 'entrega' from 'embarque' date
 			if location ["fecha"] == "||LOW":
 				fechaEmbarque      = self.ecudoc ["34_FechaEmbarque"]
-				print (fechaEmbarque)
 				date_obj           = datetime.strptime (fechaEmbarque, "%d-%m-%Y")
 				new_date_obj       = date_obj  # Fecha actual
 
@@ -299,8 +268,8 @@ class CartaporteInfo (EcuInfo):
 	def getCondiciones (self):
 		conditions = {'pago':None, 'transporte':None}
 		# Condiciones transporte
+		text = self.fields ["09_Condiciones"]["value"]
 		try:
-			text = self.fields ["09_Condiciones"]["value"]
 			if "SIN CAMBIO" in text.upper():
 				conditions ["transporte"] = "DIRECTO, SIN CAMBIO DEL CAMION"
 			elif "CON CAMBIO" in text.upper():
@@ -419,92 +388,43 @@ class CartaporteInfo (EcuInfo):
 			"otrosGastosRemi":None, "otrosMonedaRemi":None, "otrosGastosDest":None, "otrosMonedaDest": None,
 			"totalGastosRemi":None, "totalMonedaRemi": None, "totalGastosDest":None, "totalMonedaDest":None}
 		try:
-			tabla = self.fields ["17_Gastos"]["value"]
-
 			# DESTINATARIO:
 			USD = "USD"
-			gastos ["fleteDest"]	   = self.getValueTablaGastos (tabla, "ValorFlete", "MontoDestinatario")
+			gastos ["fleteDest"]	   = self.fields ["17_Gastos:ValorFlete,MontoDestinatario"]["value"]
 			gastos ["monedaDest"]      = USD if gastos ["fleteDest"] else None
-			gastos ["otrosGastosDest"] = self.getValueTablaGastos (tabla, "OtrosGastos", "MontoDestinatario")
+			gastos ["otrosGastosDest"] = self.fields ["17_Gastos:OtrosGastos,MontoDestinatario"]["value"]
 			gastos ["otrosMonedaDest"] = USD if gastos ["otrosGastosDest"] else None
-			gastos ["totalGastosDest"] = self.getValueTablaGastos (tabla, "Total", "MontoDestinatario")
+			gastos ["totalGastosDest"] = self.fields ["17_Gastos:Total,MontoDestinatario"]["value"]
 			gastos ["totalMonedaDest"] = USD if gastos ["totalGastosDest"] else None
 
 			# REMITENTE: 
-			gastos ["fleteRemi"]       = self.getValueTablaGastos (tabla, "ValorFlete", "MontoRemitente")
+			gastos ["fleteRemi"]       = self.fields ["17_Gastos:ValorFlete,MontoRemitente"]["value"]
 			gastos ["monedaRemi"]      = USD if gastos ["fleteRemi"] else None
-			gastos ["otrosGastosRemi"] = self.getValueTablaGastos (tabla, "OtrosGastos", "MontoRemitente")
+			gastos ["otrosGastosRemi"] = self.fields ["17_Gastos:OtrosGastos,MontoRemitente"]["value"]
 			gastos ["otrosMonedaRemi"] = USD if gastos ["otrosGastosRemi"] else None
-			gastos ["totalGastosRemi"] = self.getValueTablaGastos (tabla, "Total", "MontoRemitente")
+			gastos ["totalGastosRemi"] = self.fields ["17_Gastos:Total,MontoRemitente"]["value"]
 			gastos ["totalMonedaRemi"] = USD if gastos ["totalGastosRemi"] else None
 
 			for k in gastos.keys ():
 				if not "moneda" in k.lower ():
+					gastos [k] = None if gastos [k] == "" else gastos[k]
 					gastos [k] = Utils.convertToAmericanFormat (gastos [k])
 		except:
 			Utils.printException ("Obteniendo valores de 'gastos'")
 
 		return gastos
 
-	#-- Get value from Cartaporte Gastos table
-	def getValueTablaGastos (self, tabla, firstKey, secondKey):
-		try:
-			text = tabla [firstKey]["value"][secondKey]["value"]
-			value = Utils.getNumber (text)
-			return value
-		except:
-			#print (f"Sin valor en '{firstKey}'-'{secondKey}')")
-			#printx (traceback_format_exc())
-			return None
 	#-------------------------------------------------------------------
 	#-- For NTA and BYZA:
 	#   Get subject info: nombre, dir, pais, ciudad, id, idNro ---------
 	#-- BYZA format: <Nombre>\n<Direccion>\n<PaisCiudad><TipoID:ID> -----
 	#-------------------------------------------------------------------
 	#-- Get subject info: nombre, dir, pais, ciudad, id, idNro
-	def getSubjectInfo (self, key):
-		subject = {"nombre":None, "direccion":None, "pais": None, 
-		           "ciudad":None, "tipoId":None, "numeroId": None}
-		try:
-			text	= Utils.getValue (self.fields, key)
-			lines   = text.split ("\n")
-
-			if len (lines) == 3:
-				nameDirLines = lines [0:2]
-				idPaisLine   = lines [2]
-			elif len (lines) == 4:
-				nameDirLines = lines [0:3]
-				idPaisLine   = lines [3]
-			elif len (lines) < 3:
-				print (f">>> Alerta:  Pocas líneas de texto en '{key}' para extraer la información.")
-				return subject
-
-			text, subject        = Extractor.removeSubjectId (idPaisLine, subject, key)
-			text, subject        = Extractor.removeSubjectCiudadPais (text, subject, self.resourcesPath, key)
-			text, subject        = Extractor.removeSubjectCiudadPais (text, subject, self.resourcesPath, key)
-			nameDirText          = "\n".join (nameDirLines)
-			text, subject        = Extractor.removeSubjectNombreDireccion (nameDirText, subject, key)
-			subject ["numeroId"] = Utils.convertToEcuapassId (subject ["numeroId"])
-		except:
-			Utils.printException (f"Obteniendo datos del sujeto: '{key}' en el texto: '{text}'")
-
-		print ("--text:", text)
-		print (subject)
+	def getSubjectInfo (self, subjectType):
+		text	= Utils.getValue (self.fields, subjectType)
+		subject = Extractor.getSubjectInfoFromText (text, self.resourcesPath, subjectType)
 		return (subject)
 
-#	#-- Overwritten: Get value from document field
-#	def getDocumentFieldValue (self, docField):
-#		if "Gastos" in docField:
-#			fieldName	= docField.split (":")[0]
-#			rowName		= docField.split (":")[1].split (",")[0]
-#			colName		= docField.split (":")[1].split (",")[1]
-#			tablaGastos = self.fields [fieldName]["value"]
-#			value		= self.getValueTablaGastos (tablaGastos, rowName, colName)
-#		else:
-#			value		= super ().getDocumentFieldValue (docField)
-#			
-#		return value
-	
 #--------------------------------------------------------------------
 # Call main 
 #--------------------------------------------------------------------

@@ -12,26 +12,60 @@ class EcuInfo:
 
 	def __init__ (self, docType, fieldsJsonFile, runningDir):
 		self.docType        = docType
+		self.inputsParametersFile = Utils.getInputsParametersFile (docType)
+
 		self.fieldsJsonFile = fieldsJsonFile
 		self.runningDir     = runningDir
 
 		self.empresa        = self.getEmpresaInfo ()   # Overwritten per 'empresa'
-		self.nombreEmpresa  = self.empresa ["id"]
+		#self.nombreEmpresa  = self.empresa ["id"]
 
-		print (f"-- docType: '{self.docType}'")
-		if self.docType == "CARTAPORTE":
-			self.inputsParametersFile = "cartaporte_input_parameters.json"
-		elif self.docType == "MANIFIESTO":
-			self.inputsParametersFile = "manifiesto_input_parameters.json"
-		elif self.docType == "DECLARACION":
-			self.inputsParametersFile = "declaracion_input_parameters.json"
-		else:
-			Utils.printx (f"ERROR: Tipo de documento desconocido:", docType)
+		self.resourcesPath  = os.path.join (runningDir, "resources", "data_cartaportes") 
+		self.fields         = json.load (open (fieldsJsonFile))
+		#self.fields ["jsonFile"]  = fieldsJsonFile
+		self.ecudoc         = {}
 
-		self.resourcesPath        = os.path.join (runningDir, "resources", "data_cartaportes") 
-		self.fields               = json.load (open (fieldsJsonFile))
-		self.fields ["jsonFile"]  = fieldsJsonFile
-		self.ecudoc               = {}
+	#-- Implemented in subclasses
+	def getEmpresaInfo (self):
+		return None
+
+	#-- Updated Ecuapass document fields with values ready to transmit
+	#-- Change names to codes for additional presition
+	def updateEcuapassFile (self, ecuJsonFile):
+		print ("-- Updating Ecuapass fields...")
+		ecudoc = json.load (open (ecuJsonFile))
+		for key in ecudoc:
+			if ecudoc [key] is None:
+				continue
+
+			# Vehiculo
+			if "Tipo_Vehiculo" in key:
+				vehiculos    = {"SEMIRREMOLQUE":"SR", "TRACTOCAMION":"TC", "CAMION":"CA"}
+				ecudoc [key] = vehiculos [ecudoc[key]]
+
+			# Embalaje
+			if "Embalaje" in key: 
+				embalaje = ecudoc [key].upper()
+				if "PALLETS" in embalaje:
+					embalaje = "152" # "[152] PALETAS"
+				elif "SACO" in embalaje:
+					embalaje = "104" # "[104] SACO"
+				elif "CAJA" in embalaje:
+					embalaje = "035" # "[035] CAJA"
+				ecudoc [key] = embalaje
+
+			# Moneda
+			if "Moneda" in key:
+				ecudoc [key] = "USD"
+
+			# Remove confidence string ("||LOW")
+			value        = ecudoc [key] 
+			value        = value.split ("||")[0] if value else None
+			ecudoc [key] = value if value != "" else None
+
+		ecuJsonFileUpd = Utils.saveFields (ecudoc, ecuJsonFile, "UPDATE")
+		return ecudoc
+
 
 	#-- For all types of documents (fixed fro NTA and BYZA, check the others)
 	def getNumeroDocumento (self):
@@ -73,8 +107,9 @@ class EcuInfo:
 	#-----------------------------------------------------------
 	def getTipoProcedimiento (self):
 		tipoProcedimiento = None
-		procedimientosNTA   = {"CO":"EXPORTACION", "EC":"IMPORTACION"}
+		#procedimientosNTA   = {"CO":"EXPORTACION", "EC":"IMPORTACION"}
 		procedimientosBYZA  = {"CO":"IMPORTACION", "EC":"EXPORTACION"}
+		procedimientosNTA   = procedimientosBYZA
 
 		try:
 			if self.empresa ["id"] == "NTA":
@@ -143,7 +178,7 @@ class EcuInfo:
 			expression = rf'(?:{w1}\s+{w2}\s+{w3}|{w2}\s+{w3}\s+{w1}|{w3}\s+{w1}\s+{w2}|{w4}\s+{w2}\s+{w3}|{w2}\s+{w3}\s+{w4}|{w3}\s+{w4}\s+{w2}|{w1}\s+{w2}\s+{w3}|{w2}\s+{w3}\s+{w1}|{w3}\s+{w1}\s+{w2}|{w4}\s+{w2}\s+{w3}|{w2}\s+{w3}\s+{w4}|{w3}\s+{w4}\s+{w2})'
 
 		elif self.empresa ['id'] == 'BYZA':
-			expression = r"By\s*za\s*soluciones\s*(que\s*)*facilitan\s*tu\s*vida"
+			expression = r"(Byza)|(By\s*za\s*soluciones\s*(que\s*)*facilitan\s*tu\s*vida)"
 		else:
 			return text
 
@@ -157,15 +192,15 @@ class EcuInfo:
 	#-----------------------------------------------------------
 	def getMercanciaDescripcion (self, descripcion):
 		if self.empresa ['id'] == "BYZA":
-			if self.docType == "CARTAPORTE":   # Before "---" or CEC####-###
-				pattern = r'((---+|CEC).*)$'
+			if self.docType == "CARTAPORTE":   # Before "---" or CEC##### or "\n"
+				pattern = r'((---+|CEC|\n\n).*)$'
 				descripcion = re.sub (pattern, "", descripcion, flags=re.DOTALL)
 
 			elif self.docType == "MANIFIESTO": # Before "---" or CPI: ###-###
-				pattern = r'((---+|CPI:).*)$'
+				pattern = r'((---+|CPI:|CPIC:|\n\n).*)$'
 				descripcion = re.sub (pattern, "", descripcion, flags=re.DOTALL)
 
-		return descripcion
+		return descripcion.strip()
 
 	#----------------------------------------------------------------
 	#-- Create CODEBIN fields from document fields using input parameters
@@ -175,12 +210,12 @@ class EcuInfo:
 			inputsParams = ResourceLoader.loadJson ("docs", self.inputsParametersFile)
 			codebinFields = {}
 			for key in inputsParams:
-				docField   = inputsParams [key]["field"]
-				cbinField  = inputsParams [key]["fieldCodebin"]
-				#print ("-- key:", key, " dfield:", docField, "cfield: ", cbinField)
-				if cbinField:
-					value = self.getDocumentFieldValue (docField, "CODEBIN")
-					codebinFields [cbinField] = value
+				ecudocsField  = inputsParams [key]["ecudocsField"]
+				codebinField  = inputsParams [key]["codebinField"]
+				#print ("-- key:", key, " dfield:", ecudocsField, "cfield: ", codebinField)
+				if codebinField:
+					value = self.getDocumentFieldValue (ecudocsField, "CODEBIN")
+					codebinFields [codebinField] = value
 
 			return codebinFields
 		except Exception as e:
@@ -195,7 +230,7 @@ class EcuInfo:
 			inputsParams = ResourceLoader.loadJson ("docs", self.inputsParametersFile)
 			docFieldsAll = {}
 			for key in inputsParams:
-				docField   = inputsParams [key]["field"]
+				docField   = inputsParams [key]["ecudocsField"]
 				if docField == "" or "OriginalCopia" in docField:
 					continue
 				else:
@@ -206,11 +241,13 @@ class EcuInfo:
 		except Exception as e:
 			Utils.printException ("Creando campos de ECUAPASSDOCS")
 			return None
+
 	#-----------------------------------------------------------
 	# Implemented for each class: get the document field value
 	#-----------------------------------------------------------
 	def getDocumentFieldValue (self, docField, appName=None):
 		value = None
+		# For ecudocs is "CO" for codebin is "colombia"
 		if "00_Pais" in docField:
 			paises     = {"CO":"CO", "EC":"EC"}
 			if appName == "CODEBIN":
@@ -219,16 +256,10 @@ class EcuInfo:
 			codigoPais = self.fields [docField]["value"]
 			value      =  paises [codigoPais]
 
-		elif "Gastos" in docField and self.docType == "CARTAPORTE" :
-			fieldName	= docField.split (":")[0]
-			rowName		= docField.split (":")[1].split (",")[0]
-			colName		= docField.split (":")[1].split (",")[1]
-			tablaGastos = self.fields [fieldName]["value"]
-			value		= self.getValueTablaGastos (tablaGastos, rowName, colName)
-
+		# In PDF docs, it is a check box marker with "X"
 		elif "Carga_Tipo" in docField and not "Descripcion" in docField and self.docType == "MANIFIESTO":
 			fieldValue = self.fields [docField]["value"]
-			value = 1 if "x" in fieldValue or "X" in fieldValue else 0
+			value = "X" if "X" in fieldValue.upper() else ""
 
 		else:
 			value = self.fields [docField]["content"]

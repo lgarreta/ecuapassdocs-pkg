@@ -8,10 +8,56 @@ from ecuapassdocs.info.resourceloader import ResourceLoader
 # Class for extracting different values from document texts
 #--------------------------------------------------------------------
 class Extractor:
+	#-------------------------------------------------------------------
+	#-- Get location info: ciudad, pais, fecha -------------------------
+	#-- Boxes: Recepcion, Embarque, Entrega ----------------------------
+	#-------------------------------------------------------------------
+	def extractLocationDate (text, resourcesPath, fieldType=None):
+		location = {"ciudad":"||LOW", "pais":"||LOW", "fecha":"||LOW"}
+		try:
+			text   = text.replace ("\n", " ")
+			# Fecha
+			fecha = Extractor.getDate (text, resourcesPath)
+			location ["fecha"] = fecha if fecha else "||LOW"
+			# Pais
+			text, location = Extractor.removeSubjectCiudadPais (text, location, resourcesPath, fieldType)
+		except:
+			Utils.printException (f"Obteniendo datos de la localización: '{fieldType}' en el texto", text)
+
+		return (location)
+
 	#-----------------------------------------------------------
 	#-- Get subject (remitente, destinatario, declarante,..) info
 	#-- Info: nombre, dir, pais, ciudad, id, idNro
 	#-----------------------------------------------------------
+	def getSubjectInfoFromText (text, resourcesPath, subjectType):
+		subject = {"nombre":None, "direccion":None, "pais": None, 
+		           "ciudad":None, "tipoId":None, "numeroId": None}
+		try:
+			lines   = text.split ("\n")
+
+			if len (lines) == 3:
+				nameDirLines = lines [0:2]
+				idPaisLine   = lines [2]
+			elif len (lines) == 4:
+				nameDirLines = lines [0:3]
+				idPaisLine   = lines [3]
+			elif len (lines) < 3:
+				print (f">>> Alerta:  Pocas líneas de texto para extraer información de empresa.")
+				return subject
+
+			text, subject = Extractor.removeSubjectId (idPaisLine, subject, subjectType)
+			text, subject = Extractor.removeSubjectCiudadPais (text, subject, resourcesPath, subjectType)
+			text, subject = Extractor.removeSubjectCiudadPais (text, subject, resourcesPath, subjectType)
+			nameDirText   = "\n".join (nameDirLines)
+			text, subject = Extractor.removeSubjectNombreDireccion
+			(nameDirText, subject, subjectType)
+			subject ["numeroId"] = Utils.convertToEcuapassId (subject ["numeroId"])
+		except:
+			Utils.printException (f"Obteniendo datos del sujeto: '{subjectType}' en el texto: '{text}'")
+
+		print (subject)
+		return (subject)
 
 	#--  Extracts and replaces IdType and IdNumber from text-------
 	def getReplaceSubjectId (text, subject, replaceString, type):
@@ -23,11 +69,8 @@ class Extractor:
 			reId     = rf"(RUC|NIT|OTROS)[\s.:]+({reNumber}(?:-\d)?)\s*"
 			result	 = re.search (reId, text, flags=re.S)
 		 
-			tipoId   = result.group (1) if result else None
-			numeroId = result.group (2) if result else None
-
-			subject ["tipoId"]   = "OTROS" if tipoId == "NIT" else tipoId
-			subject ["numeroId"] = Utils.convertToEcuapassId (numeroId)
+			subject ["tipoId"]   = result.group (1) if result else None
+			subject ["numeroId"] = result.group (2).replace (".", "") if result else None
 
 			text	 = re.sub (reId, replaceString, text, flags=re.S).strip()
 		except:
@@ -80,7 +123,7 @@ class Extractor:
 			reLocation = f"(?P<ciudad>{cities})[\s\-,\s]+(?P<pais>{pais})[.\s]*"
 			result = re.search (reLocation, text, flags=re.I)
 			if (result == None):
-				printx (f"No se pudo localizar o no existe ciudad en: '{text}' de '{type}'")
+				printx (f"Ciudad desconocida en texto: '{text}' de '{type}'")
 			else:
 			#if (type in ["06_Recepcion", "07_Embarque", "08_Entrega", "19_Emision"]):
 				subject ["ciudad"] = result.group ("ciudad") if result else None
@@ -329,12 +372,13 @@ class Extractor:
 			reWordSep  = r'\s+(?:DE|DEL)\s+'
 			reSep      = r'(-|/)'
 
-			reDate0 = rf'\b{reDay}\s*[-]\s*{reMonthNum}\s*[-]\s*{reYear}\b' # 31-12-2023
-			reDate1 = rf'\b{reMonthTxt}\s+{reDay}{reWordSep}{reYear}\b'     # Junio 20 del 2023
-			reDate2 = rf'\b{reDay}{reWordSep}{reMonthTxt}{reWordSep}{reYear}\b' # 20 de Junio del 2023
-			reDate3 = rf'\b{reYear}{reSep}{reMonthNum}{reSep}{reDay}\b' # 2023/12/31
-			reDate4 = rf'\b{reYear}{reSep}{reMonthTxt}{reSep}{reDay}\b' # 2023/DICIEMBRE/31
-			reDateOptions = [reDate0, reDate1, reDate2, reDate3, reDate4]
+			reDate0 = rf'\b{reDay}\s*[-]\s*{reMonthNum}\s*[-]\s*{reYear}\b'     # 31-12-2023
+			reDate1 = rf'\b{reMonthTxt}\s+{reDay}{reWordSep}{reYear}\b'         # Junio 20 del 2023
+			reDate2 = rf'\b{reMonthTxt}\s+{reDay}{reSep}{reYear}\b'             # Junio 20/2023
+			reDate3 = rf'\b{reDay}{reWordSep}{reMonthTxt}{reWordSep}{reYear}\b' # 20 de Junio del 2023
+			reDate4 = rf'\b{reYear}{reSep}{reMonthNum}{reSep}{reDay}\b'         # 2023/12/31
+			reDate5 = rf'\b{reYear}{reSep}{reMonthTxt}{reSep}{reDay}\b'         # 2023/DICIEMBRE/31
+			reDateOptions = [reDate0, reDate1, reDate2, reDate3, reDate4, reDate5]
 
 			# Evaluate all reDates and select the one with results
 			results = [re.search (x, text, re.I) for (i, x) in enumerate (reDateOptions)]
@@ -349,6 +393,9 @@ class Extractor:
 				month  = result.group('month')
 			elif results [4]:
 				result = results [4]
+				month  = result.group('month')
+			elif results [5]:
+				result = results [5]
 				month  = monthsList.index (result.group('month').upper()) + 1
 			else:
 				printx (f"No existe fecha en texto '{text}'")

@@ -31,6 +31,7 @@ def main ():
 class CartaporteByza (CartaporteNTA):
 	def __init__ (self, fieldsJsonFile, runningDir):
 		super().__init__ (fieldsJsonFile, runningDir)
+		self.empresa = self.getEmpresaInfo ()
 
 	def getEmpresaInfo (self):
 		return EcuData.getEmpresaInfo ("BYZA")

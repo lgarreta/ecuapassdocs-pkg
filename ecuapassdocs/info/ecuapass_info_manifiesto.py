@@ -46,10 +46,10 @@ class ManifiestoInfo (EcuInfo):
 			self.ecudoc ["08_TipoPermiso_PEOTP"]  = permisos ["tipoPermisoPEOTP"]
 			self.ecudoc ["09_TipoPermiso_PO"]     = permisos ["tipoPermisoPO"]
 			self.ecudoc ["10_PermisoOriginario"]  = permisos ["permisoOriginario"]
-			self.ecudoc ["11_PermisoServicios1"]  = permisos ["permisoServicios"]
-			self.ecudoc ["12_PermisoServicios2"]   = None
-			self.ecudoc ["13_PermisoServicios3"]   = None
-			self.ecudoc ["14_PermisoServicios4"]   = None
+			self.ecudoc ["11_PermisoServicios1"]  = permisos ["permisoServicios1"]
+			self.ecudoc ["12_PermisoServicios2"]  = None
+			self.ecudoc ["13_PermisoServicios3"]  = None
+			self.ecudoc ["14_PermisoServicios4"]  = None
 
 			# Empresa
 			self.ecudoc ["15_NombreTransportista"] = self.getNombreEmpresa ()
@@ -117,8 +117,8 @@ class ManifiestoInfo (EcuInfo):
 			self.ecudoc ["53_Precio_Mercancias"] = incoterm ["precio"]
 			self.ecudoc ["54_Incoterm"]          = incoterm ["incoterm"]
 			self.ecudoc ["55_Moneda"]            = incoterm ["moneda"]
-			self.ecudoc ["56_Pais_Moneda"]       = incoterm ["pais"]
-			self.ecudoc ["57_Ciudad_Moneda"]     = incoterm ["ciudad"]
+			self.ecudoc ["56_Pais"]       = incoterm ["pais"]
+			self.ecudoc ["57_Ciudad"]     = incoterm ["ciudad"]
 
 			#print ("\n>>>>>> Datos de las aduanas <<<")
 			aduana                                = self.getAduanaInfo ()
@@ -166,46 +166,8 @@ class ManifiestoInfo (EcuInfo):
 			Utils.printx (traceback_format_exc())
 			raise
 
-		#self.printFieldsValues (self.ecudoc)
-		#self.updateFields ()
 		return (self.ecudoc)
 
-	#------------------------------------------------------------------
-	#-- Updated document fields with processed ecufields
-	#------------------------------------------------------------------
-	def updateFields (self):
-		# 01a 01b Transportista to 01_Transportista
-		#transpInfo = "%s\n%s" % (self.fields ["01a_Transportista_Nombre"]["value"],
-        #                                self.fields ["01b_Transportista_Id"]["value"])
-		#del self.fields ["01a_Transportista_Nombre"]
-		#del self.fields ["01b_Transportista_Id"]
-		#self.fields ["01_Transportista"] = {"content":transpInfo, "value":transpInfo}
-
-		## 28_Mercancia_Cartaporte to 28_Cartaporte
-		#cartaporte = self.fields ["28_Mercancia_Cartaporte"]
-		#self.fields ["28_Cartaporte"] = {"content" : cartaporte["content"], "value": cartaporte["value"]}
-		#del self.fields ["28_Mercancia_Cartaporte"]
-
-		## 29_Mercancia_Descripcion to 28_Descripcion
-		#descripcion = self.fields ["29_Mercancia_Descripcion"]
-		#self.fields ["29_Descripcion"] = {"content" : descripcion["content"], "value": descripcion["value"]}
-		#del self.fields ["29_Mercancia_Descripcion"]
-
-		## 30_Mercancia_Bultos to 30_Cantidad_Bultos
-		#old, new = "30_Mercancia_Bultos", "30_Cantidad_Bultos"
-		#info = self.fields [old]
-		#self.fields [new] = {"content" : info ["content"], "value": info ["value"]}
-		#del self.fields [old]
-
-		## 29_Mercancia_Descripcion to 28_Descripcion
-		#old, new = "31_Mercancia_Embalaje", "31_Marca_Bultos"
-		#info = self.fields [old]
-		#self.fields [new] = {"content" : info ["content"], "value": info ["value"]}
-		#del self.fields [old]
-
-		return self.fields
-
-		
 	#------------------------------------------------------------------
 	# Transportista information 
 	#------------------------------------------------------------------
@@ -228,7 +190,8 @@ class ManifiestoInfo (EcuInfo):
 	# Permisos info
 	#------------------------------------------------------------------
 	def getPermisosInfo (self):
-		permisos = Utils.createEmptyDic (["tipoPermisoCI", "tipoPermisoPEOTP", "tipoPermisoPO", "permisoOriginario", "permisoServicios"])
+		permisos = Utils.createEmptyDic (["tipoPermisoCI", "tipoPermisoPEOTP", 
+									      "tipoPermisoPO", "permisoOriginario", "permisoServicios"])
 		try:
 			permisos ["permisoOriginario"] = self.getPermiso_PerEmpresa ("ORIGINARIO")
 			permisos ["permisoServicios"]  = self.getPermiso_PerEmpresa ("SERVICIOS")
@@ -264,7 +227,7 @@ class ManifiestoInfo (EcuInfo):
 		if tipoPermiso == "ORIGINARIO":
 			outPermiso =  getPermiso ("02_Permiso_Originario")
 		elif tipoPermiso == "SERVICIOS":
-			if self.nombreEmpresa == "BYZA":
+			if self.empresa["id"] == "BYZA":
 				outPermiso = None
 			else:
 				outPermiso = getPermiso ("03_Permiso_Servicios").replace ("-","")
@@ -479,7 +442,8 @@ class ManifiestoInfo (EcuInfo):
 	# Aduana info: extract ciudad and pais for "cruce" and "destino" aduanas
 	#--------------------------------------------------------------------
 	def getAduanaInfo (self):
-		info = Utils.createEmptyDic (["paisCruce", "ciudadCruce", "paisDestino", "ciudadDestino"])
+		info = {"paisCruce":"||LOW", "ciudadCruce":"||LOW", "paisDestino":"||LOW", "ciudadDestino":"||LOW"}
+		#info = Utils.createEmptyDic (["paisCruce", "ciudadCruce", "paisDestino", "ciudadDestino"])
 		text = ""
 		try:
 			reWithSeparador = r'(\b\w+[\s\w]*\b)\s*?[-.,]?\s*(\w+)'
@@ -492,6 +456,7 @@ class ManifiestoInfo (EcuInfo):
 			for key in ["37_Aduana_Cruce", "38_Aduana_Destino"]:
 				text = Utils.getValue (self.fields, key)
 				results = [re.search (x, text) for x in [reWithSeparador, reWithParentesis]]
+				print ("-- results:", results)
 
 				if results [0] or results [1]:
 					result = results [0] if results [0] else results [1]

@@ -42,6 +42,15 @@ class ManifiestoNTA (ManifiestoInfo):
 		else:
 			return None
 
+	#-- Just "Originario"
+	def getPermisosInfo (self):
+		info = EcuData.getEmpresaInfo ("NTA")
+		permisos = {"tipoPermisoCI"    : "1",
+			        "tipoPermisoPEOTP" : None,
+			        "tipoPermisoPO"    : None,
+			        "permisoOriginario": info ["permisos"]["originario"],
+			        "permisoServicios1": info ["permisos"]["servicios1"]}
+		return permisos
 #--------------------------------------------------------------------
 # Call main 
 #--------------------------------------------------------------------

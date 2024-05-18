@@ -56,7 +56,7 @@ class CartaporteNTA (CartaporteInfo):
 			text, subject = Extractor.removeSubjectCiudadPais (text, subject, self.resourcesPath, key)
 			text, subject = Extractor.removeSubjectNombreDireccion (text, subject, key)
 		except:
-			Utils.printException (f"Obteniendo datos del sujeto: '{key}' en el texto", text)
+			Utils.printException (f"Obteniendo datos del sujeto: '{key}' en el texto: '{text}'")
 
 		return (subject)
 

@@ -9,17 +9,18 @@ class EcuData:
 
 	empresas = { 
 		"BYZA": {
-			'id'     : "BYZA",
-			"nombre" : "Grupo BYZA S.A.S.",
-			"direccion": "Av. Coral y los Álamos",
-			"idTipo" : "RUC", 
+			'id'       : "BYZA",
+			"nombre"   : "Grupo BYZA S.A.S.",
+			"direccion": "Av. Coral y los Alamos",
+			"idTipo"   : "RUC", 
 			"idNumero" : "0400201414001",
 			"modelCartaportes": "Model_02_Cartaportes_NTA_BYZA",
 			"modelManifiestos": "Manifiestos_NTA_BYZA_Template",
 			#"modelManifiestos": "Model_Manifiestos_NTA_BYZA_4",
 			"modelDeclaraciones": None,
 			"MRN": None,
-			"MSN": None
+			"MSN": None,
+			"permisos" : {"originario":"PO-CO-0033-22", "servicios1": "PO-CO-0033-22"}
 		},
 		"BOTERO": {
 			'id'     : "BOTERO",
@@ -31,7 +32,7 @@ class EcuData:
 			"modelManifiestos": "Model_Manifiestos_Botero",
 			"modelDeclaraciones": None,
 			"MRN": None,
-			"MSN": None
+			"MSN": None,
 		},
 		"NTA" : { 
 			'id'     : "NTA",
@@ -43,7 +44,9 @@ class EcuData:
 			"modelManifiestos": "Manifiestos_NTA_BYZA_Template",
 			"modelDeclaraciones": "Model_Declaraciones_NTA_Single",
 			"MRN": "CEC202340350941",
-			"MSN": "0001"
+			"MSN": "0001",
+			"permisos" : {"originario":"C.I.-E.C.-0060-04",
+				          "servicios1":"P.P.S.CO015905", "servicios2":"P.P.S.PE000210"}
 		},
 		"SILOGISTICA": {
 			'id'     : "SILOGISTICA",

@@ -51,6 +51,18 @@ class ManifiestoByza (ManifiestoInfo):
 	def getCargaDescripcion (self):
 			return None
 
+	#-- Just "Originario"
+	def getPermisosInfo (self):
+		info = EcuData.getEmpresaInfo ("BYZA")
+		permisos = {"tipoPermisoCI"    : None,
+			        "tipoPermisoPEOTP" : None,
+			        "tipoPermisoPO"    : "1", 
+			        "permisoOriginario": info ["permisos"]["originario"],
+			        "permisoServicios1" : None }
+		return permisos
+	
+
+
 #--------------------------------------------------------------------
 # Call main 
 #--------------------------------------------------------------------

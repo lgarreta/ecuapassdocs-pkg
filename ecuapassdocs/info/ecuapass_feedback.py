@@ -8,6 +8,8 @@ from datetime import datetime
 
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 
+from .ecuapass_utils import Utils
+
 class EcuFeedback:
 	#----------------------------------------------------------------
 	#-- Get the blob client to write to Azure blob
@@ -17,7 +19,8 @@ class EcuFeedback:
 		container_name = "blobfeedback"
 
 		# Azure Storage account connection string
-		connection_string = os.environ.get ("AZR_BLOB_CONN_STR")
+		#connection_string = os.environ.get ("AZR_BLOB_CONN_STR")
+		connection_string = "DefaultEndpointsProtocol=https;AccountName=lgformsstorage;AccountKey=BHsWkVaWQYStRq8FOpoIl0jI39W+WFvrSJmxesr0euIEJe+qkSi0LoTM0HZfyOn2XbYfnHir7CD8+ASt6ZJnwg==;EndpointSuffix=core.windows.net"
 
 		# Initialize the BlobServiceClient
 		blob_service_client = BlobServiceClient.from_connection_string (connection_string)
@@ -37,7 +40,7 @@ class EcuFeedback:
 		try:
 			blob_client    = EcuFeedback.getBlobClient (f"{logMessage}")
 			blob_client.upload_blob ("", overwrite=True)
-		except:
+		except: 
 			print (f"No se pudo enviar el log'")
 
 	#----------------------------------------------------------------
@@ -48,6 +51,13 @@ class EcuFeedback:
 		filename    = os.path.basename (docFilepath)
 		logFilename = f"LOG_{empresa}_{filename}"
 		print ("Sending log file: ", logFilename)
+		EcuFeedback.sendFileAsBytes (docFilepath, logFilename)
+#		if docFilepath != None and os.path.exists (docFilepath):
+#			pdf_blob_client = EcuFeedback.getBlobClient (logFilename)
+#			with open(docFilepath, "rb") as pdf_file:
+#				pdf_blob_client.upload_blob (pdf_file, overwrite=True)
+
+	def sendFileAsBytes (docFilepath, logFilename):
 		if docFilepath != None and os.path.exists (docFilepath):
 			pdf_blob_client = EcuFeedback.getBlobClient (logFilename)
 			with open(docFilepath, "rb") as pdf_file:
@@ -60,17 +70,22 @@ class EcuFeedback:
 		try:
 			print ("Enviando retroalimentación: ", zipFilepath) 
 			# Upload text as a blob
-			feedbackText = EcuFeedback.getTextFromZipFile (zipFilepath)
-			fileSufix    = EcuFeedback.getCurrentDateTimeString ()
+			filename    = os.path.basename (docFilepath)
+			logFilename = f"LOG_{filename}"
+			EcuFeedback.sendFileAsBytes (zipFilepath, logFilename)
 
-			blob_client  = EcuFeedback.getBlobClient (f"feedback-{fileSufix}.txt")
-			blob_client.upload_blob (feedbackText, overwrite=True)
+			#feedbackText = EcuFeedback.getTextFromZipFile (zipFilepath)
+			#print ("--feedbackText: ", feedbackText)
+			#fileSufix    = EcuFeedback.getCurrentDateTimeString ()
 
-			EcuFeedback.sendPdfFile (docFilepath)	
+			#blob_client  = EcuFeedback.getBlobClient (f"feedback-{fileSufix}.txt")
+			#blob_client.upload_blob (feedbackText, overwrite=True)
+
+			#EcuFeedback.sendPdfFile (docFilepath)	
 
 			return (f"Retroalimentación en la nube: Documento {docFilepath}")
 		except:
-			print (f"No se pudo enviar retroalimentación")
+			Utils.printException (f"No se pudo enviar retroalimentación")
 
 		return None
 
