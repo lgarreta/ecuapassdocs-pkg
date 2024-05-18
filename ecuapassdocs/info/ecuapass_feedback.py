@@ -20,7 +20,8 @@ class EcuFeedback:
 
 		# Azure Storage account connection string
 		#connection_string = os.environ.get ("AZR_BLOB_CONN_STR")
-		connection_string = "DefaultEndpointsProtocol=https;AccountName=lgformsstorage;AccountKey=BHsWkVaWQYStRq8FOpoIl0jI39W+WFvrSJmxesr0euIEJe+qkSi0LoTM0HZfyOn2XbYfnHir7CD8+ASt6ZJnwg==;EndpointSuffix=core.windows.net"
+		connection_string = EcuFeedback.getConnectionString ();
+		print ("ConnStr:", connection_string)
 
 		# Initialize the BlobServiceClient
 		blob_service_client = BlobServiceClient.from_connection_string (connection_string)
@@ -30,6 +31,19 @@ class EcuFeedback:
 		blob_client = container_client.get_blob_client (text_blob_name)
 
 		return (blob_client)
+
+	#----------------------------------------------------------------
+	#----------------------------------------------------------------
+	def getConnectionString ():
+		azrKeys = ["DefaultEndpointsProtocol", "AccountName", "AccountKey", "EndpointSuffix"]
+		azrInfo = ["https", "lgformsstorage",
+			 "BHsWkVaWQYStRq8FOpoIl0jI39W+WFvrSJmxesr0euIEJe+qkSi0LoTM0HZfyOn2XbYfnHir7CD8+ASt6ZJnwg==",
+			 "core.windows.net"]
+
+		connStr = ""
+		connStr = ";".join ([f"k=i" for k,i in zip (azrKeys, azrInfo)])
+
+		return connStr
 
 	#----------------------------------------------------------------
 	# Send a text to blob
