@@ -35,9 +35,6 @@ class EcuFeedback:
 	#----------------------------------------------------------------
 	#----------------------------------------------------------------
 	def getConnectionString ():
-		azrKeys = ["DefaultEndpointsProtocol", "AccountName", "AccountKey", "EndpointSuffix"]
-		azrInfo = ["https", "lgformsstorage",
-			 "core.windows.net"]
 
 		connStr = ""
 		connStr = ";".join ([f"k=i" for k,i in zip (azrKeys, azrInfo)])
