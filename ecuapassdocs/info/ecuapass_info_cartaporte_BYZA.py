@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 
-#import re, os, json, sys
-#from traceback import format_exc as traceback_format_exc
-#from datetime import datetime, timedelta
-
 import re, sys, os
-from .ecuapass_info_cartaporte_NTA import CartaporteNTA
+from .ecuapass_info_cartaporte import CartaporteInfo
 from .ecuapass_extractor import Extractor
 from .ecuapass_data import EcuData
 from .ecuapass_utils import Utils
@@ -22,20 +18,20 @@ def main ():
 	fieldsJsonFile = args [1]
 	runningDir = os.getcwd ()
 	CartaporteInfo = CartaporteByza (fieldsJsonFile, runningDir)
-	mainFields = CartaporteInfo.getMainFields ()
+	mainFields = CartaporteInfo.getEcuapassFields ()
 	Utils.saveFields (mainFields, fieldsJsonFile, "Results")
 
 #----------------------------------------------------------
 # Class that gets main info from Ecuapass document 
 #----------------------------------------------------------
-class CartaporteByza (CartaporteNTA):
+class CartaporteByza (CartaporteInfo):
 	def __init__ (self, fieldsJsonFile, runningDir):
 		super().__init__ (fieldsJsonFile, runningDir)
 		self.empresa = self.getEmpresaInfo ()
 
 	def getEmpresaInfo (self):
 		return EcuData.getEmpresaInfo ("BYZA")
-	
+
 #--------------------------------------------------------------------
 # Call main 
 #--------------------------------------------------------------------

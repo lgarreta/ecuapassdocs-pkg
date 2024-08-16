@@ -3,7 +3,7 @@ from importlib import resources
 from traceback import format_exc as traceback_format_exc
 
 from .ecuapass_utils import Utils
-from ecuapassdocs.info.resourceloader import ResourceLoader 
+from .resourceloader import ResourceLoader 
 #--------------------------------------------------------------------
 # Class for extracting different values from document texts
 #--------------------------------------------------------------------
@@ -100,7 +100,6 @@ class Extractor:
 				result = re.search (reLocation, text, flags=re.I)
 				info ["ciudad"] = result.group ("ciudad") if result != None else None
 			else:
-				print (">>>>>> Extracting 'ciudad' from:", text)
 				reCiudad = r"\b(\w+(?:\s+\w+)*)\b"
 				info ["ciudad"] = Extractor.getValueRE (reCiudad, text, re.I)
 
@@ -208,8 +207,8 @@ class Extractor:
 		number   = Extractor.getValueRE (reNumber, text)
 		return number
 	
-	#-- Get MRN number from text with pattern "MRN:XXXX"
-	def getMRN (text):
+	#-- Get MRN number from text using the pattern "MRN:XXXX"
+	def getMRNFromText (text):
 		reMRN = r"\bMRN\b\s*[:]?\s*\b(\w*)\b"
 		MRN = Utils.getValueRE (reMRN, text)
 		return MRN
@@ -276,7 +275,7 @@ class Extractor:
 	#------------------------------------------------------------------
 	# Get pais from nacionality 
 	#------------------------------------------------------------------
-	def getPaisFromSubstring (text):
+	def getPaisFromPrefix (text):
 		pais = None
 		try:
 			if "COL" in text.upper():
@@ -305,13 +304,30 @@ class Extractor:
 	def getCiudad (text, pais, resourcesPath):
 		if (pais): # if pais get ciudades from pais and search them in text
 			reCities = Extractor.getSubjectCitiesString (pais, resourcesPath)
-			result = re.findall (reCities, text)
+			ciudad   = Extractor.getValueRE (f"({reCities})", text, re.I)
 		else:      # if no pais, get the substring without trailing spaces
 			reCiudad = r"\b(\w+(?:\s+\w+)*)\b"
-			ciudad   = re.findall (reCiudad, text)
+			results  = re.findall (reCiudad, text)
+			ciudad   = result[-1] if result [-1] else None
+		return ciudad
+
+#	def getCiudad (text, pais, resourcesPath):
+#		if (pais): # if pais get ciudades from pais and search them in text
+#			reCities = Extractor.getSubjectCitiesString (pais, resourcesPath)
+#			print ("+++DEBUG: cities: ", reCities)
+#			result = re.findall (reCities, text, re.I)
+#		else:      # if no pais, get the substring without trailing spaces
+#			reCiudad = r"\b(\w+(?:\s+\w+)*)\b"
+#			ciudad   = re.findall (reCiudad, text)
 
 		ciudad = result[-1] if result [-1] else None
 		return ciudad
+
+	def getPaisCiudad (text, resourcesPath):
+		pais   = Extractor.getPais (text, resourcesPath)
+		print ("+++DEBUG: pais:", pais)
+		ciudad = Extractor.getCiudad (text, pais, resourcesPath)
+		return pais, ciudad
 			
 	#------------------------------------------------------------------
 	# Extract 'placa' and 'pais'
@@ -319,7 +335,8 @@ class Extractor:
 	def getPlacaPais (text):
 		result = {"placa":None, "pais":None}
 
-		if (text is None or "N/A" in text or "XX" in text):
+		text = text.upper ()
+		if (text == "X" or text is None or "N/A" in text or "XX" in text):
 			return result
 
 		try:
@@ -335,24 +352,29 @@ class Extractor:
 	#------------------------------------------------------------------
 	# Get 'embalaje' from text with number + embalaje: NNN WWWWW
 	#------------------------------------------------------------------
-	def getTipoEmbalaje (text, resourcesPath):
-		Utils.printx (f">>> Extrayendo embalaje desde el texto: '{text}'")
+	def getTipoEmbalaje (text):
 		try:
 			reNumber   = r'\d+(?:[.,]*\d*)+' # RE for extracting a float number 
 			reEmbalaje = rf"{reNumber}\s+(\b(\w+)\b)"    # String after number
 			embalaje   = Extractor.getValueRE (reEmbalaje, text) 
 
-			if "PALLETS" in embalaje:
-				return "152" # "[152] PALETAS"
-			elif "SACOS" in embalaje.upper ():
-				return "104" # "[104] SACO"
-			elif "CAJAS" in embalaje.upper ():
-				return "035" # "[035] CAJA"
-			else:
-				return embalaje.strip () + "||LOW"
+			codeEmbalaje = Extractor.getCodeEmbalaje (embalaje)
+
+			return codeEmbalaje
 		except:
-			Utils.printx (f">>> EXCEPCION: Problemas extrayendo embalaje desde texto: '{text}'")
+			Utils.printx (f"Problemas extrayendo embalaje desde texto: '{text}'")
+			#Utils.printException ()
 			return None
+
+	def getCodeEmbalaje (embalaje):
+		if "PALLET" in embalaje or "ESTIBA" in embalaje:
+			return "152" # "[152] PALETAS"
+		elif "SACO" in embalaje.upper ():
+			return "104" # "[104] SACO"
+		elif "CAJA" in embalaje.upper ():
+			return "035" # "[035] CAJA"
+		else:
+			return embalaje.strip () + "||LOW"
 
 	#------------------------------------------------------------------
 	#-- Extract numerical or text date from text ----------------------
@@ -372,7 +394,8 @@ class Extractor:
 			reWordSep  = r'\s+(?:DE|DEL)\s+'
 			reSep      = r'(-|/)'
 
-			reDate0 = rf'\b{reDay}\s*[-]\s*{reMonthNum}\s*[-]\s*{reYear}\b'     # 31-12-2023
+			#reDate0 = rf'\b{reDay}\s*[-]\s*{reMonthNum}\s*[-]\s*{reYear}\b'     # 31-12-2023
+			reDate0 = rf'\b{reDay}\s*{reSep}\s*{reMonthNum}\s*{reSep}\s*{reYear}\b'     # 31-12-2023
 			reDate1 = rf'\b{reMonthTxt}\s+{reDay}{reWordSep}{reYear}\b'         # Junio 20 del 2023
 			reDate2 = rf'\b{reMonthTxt}\s+{reDay}{reSep}{reYear}\b'             # Junio 20/2023
 			reDate3 = rf'\b{reDay}{reWordSep}{reMonthTxt}{reWordSep}{reYear}\b' # 20 de Junio del 2023
@@ -390,7 +413,7 @@ class Extractor:
 				month  = monthsList.index (result.group('month').upper()) + 1
 			elif results [3]:
 				result = results [3]
-				month  = result.group('month')
+				month  = monthsList.index (result.group('month').upper()) + 1
 			elif results [4]:
 				result = results [4]
 				month  = result.group('month')

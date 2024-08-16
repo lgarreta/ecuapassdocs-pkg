@@ -17,7 +17,7 @@ def main ():
 	args = sys.argv
 	fieldsJsonFile = args [1]
 	runningDir = os.getcwd ()
-	mainFields = ManifiestoInfo.getMainFields (fieldsJsonFile, runningDir)
+	mainFields = ManifiestoInfo.getEcuapassFields (fieldsJsonFile, runningDir)
 	Utils.saveFields (mainFields, fieldsJsonFile, "Results")
 
 #----------------------------------------------------------
@@ -32,15 +32,15 @@ class ManifiestoNTA (ManifiestoInfo):
 		return EcuData.getEmpresaInfo ("NTA")
 
 	#-- Get tipo vehículo according to remolque info
-	def getTipoVehiculo  (self, tipo, remolque):
-		if tipo == "VEHICULO" and remolque ["placa"]:
-			return "SEMIRREMOLQUE"
-		elif tipo == "VEHICULO" and not remolque ["placa"]:
-			return "CAMION"
-		elif tipo == "REMOLQUE" and remolque ["placa"]:
-			return "SEMIRREMOLQUE"
-		else:
-			return None
+#	def getTipoVehiculo  (self, tipo, remolque):
+#		if tipo == "VEHICULO" and remolque ["placa"]:
+#			return "SEMIRREMOLQUE"
+#		elif tipo == "VEHICULO" and not remolque ["placa"]:
+#			return "CAMION"
+#		elif tipo == "REMOLQUE" and remolque ["placa"]:
+#			return "SEMIRREMOLQUE"
+#		else:
+#			return None
 
 	#-- Just "Originario"
 	def getPermisosInfo (self):
@@ -51,6 +51,7 @@ class ManifiestoNTA (ManifiestoInfo):
 			        "permisoOriginario": info ["permisos"]["originario"],
 			        "permisoServicios1": info ["permisos"]["servicios1"]}
 		return permisos
+
 #--------------------------------------------------------------------
 # Call main 
 #--------------------------------------------------------------------

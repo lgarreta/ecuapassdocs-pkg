@@ -12,7 +12,7 @@ def main ():
 	args = sys.argv
 	fieldsJsonFile = args [1]
 	runningDir = os.getcwd ()
-	mainFields = Declaracion.getMainFields (fieldsJsonFile, runningDir)
+	mainFields = Declaracion.getEcuapassFields (fieldsJsonFile, runningDir)
 	Utils.saveFields (mainFields, fieldsJsonFile, "Results")
 
 #----------------------------------------------------------
@@ -22,7 +22,7 @@ class Declaracion:
 	resourcesPath = None
 
 	#-- Get data and value from document main fields
-	def getMainFields (fieldsJsonFile, runningDir):
+	def getEcuapassFields (fieldsJsonFile, runningDir):
 		Utils.runningDir    = runningDir      # Dir to copy and get images and data
 		Declaracion.resourcesPath = os.path.join (runningDir,"resources", "data_declaracion") 
 		ecudoc = {}		                     # Dic for Ecuappass document info

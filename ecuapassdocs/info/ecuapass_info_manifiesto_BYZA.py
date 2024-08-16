@@ -17,7 +17,7 @@ def main ():
 	args = sys.argv
 	fieldsJsonFile = args [1]
 	runningDir = os.getcwd ()
-	mainFields = ManifiestoInfo.getMainFields (fieldsJsonFile, runningDir)
+	mainFields = ManifiestoInfo.getEcuapassFields (fieldsJsonFile, runningDir)
 	Utils.saveFields (mainFields, fieldsJsonFile, "Results")
 
 #----------------------------------------------------------
@@ -35,17 +35,20 @@ class ManifiestoByza (ManifiestoInfo):
 		return f"{self.numero}"
 
 	#-- Get tipo vehículo (VEHICULO/REMOLQUE) according to remolque info
-	def getTipoVehiculo  (self, tipo, remolque):
-		if tipo == "VEHICULO" and remolque ["placa"]:
-			return "TRACTOCAMION"
-		elif tipo == "VEHICULO" and not remolque ["placa"]:
-			return "CAMION"
-		else:
-			return None
+#	def getTipoVehiculo  (self, tipo, remolque):
+#		if tipo == "VEHICULO" and remolque ["placa"]:
+#			return "TRACTOCAMION"
+#		elif tipo == "VEHICULO" and not remolque ["placa"]:
+#			return "CAMION"
+#		else:
+#			return None
 
-	#-- None for BYZA
-	def getCheckCertificadoRemolque (self, key):
-		return None
+	#-- For vehicles: None for BYZA
+	def getCheckCertificado (self, type, key):
+		if type == "REMOLQUE":
+			return None
+		else:
+			return super().getCheckCertificado (type, key)
 
 	#-- None for BYZA 
 	def getCargaDescripcion (self):

@@ -20,7 +20,7 @@ def main ():
 	args = sys.argv
 	fieldsJsonFile = args [1]
 	runningDir = os.getcwd ()
-	mainFields = CartaporteInfo.getMainFields (fieldsJsonFile, runningDir)
+	mainFields = CartaporteInfo.getEcuapassFields (fieldsJsonFile, runningDir)
 	Utils.saveFields (mainFields, fieldsJsonFile, "Results")
 
 #----------------------------------------------------------
@@ -32,10 +32,11 @@ class CartaporteInfo (EcuInfo):
 		super().__init__ ("CARTAPORTE", fieldsJsonFile, runningDir)
 
 	#-- Get data and value from document main fields"""
-	def getMainFields (self):
+	def getEcuapassFields (self):
+		logFile, stdoutOrg= Utils.redirectOutput ("log-extraction-cartaporte.log")
 		try:
 			#--------------------------------------------------------------
-			# print ("\n>>>>>> Carta de Porte Internacional por Carretera <<<")
+			print ("\n>>>>>> Carta de Porte Internacional por Carretera <<<")
 			#--------------------------------------------------------------
 			self.ecudoc ["01_Distrito"]	         = self.getDistrito ()
 			self.ecudoc ["02_NumeroCPIC"]        = self.getNumeroDocumento ()
@@ -47,7 +48,7 @@ class CartaporteInfo (EcuInfo):
 			self.ecudoc ["06_EmpresaTransporte"] = self.getNombreEmpresa ()
 			self.ecudoc ["07_DepositoMercancia"] = self.getDepositoMercancia ()
 			self.ecudoc ["08_DirTransportista"]	 = self.getDireccionEmpresa ()
-			self.ecudoc ["09_NroIdentificacion"] = self.getIdEmpresa ()
+			self.ecudoc ["09_NroIdentificacion"] = self.getIdNumeroEmpresa ()
 
 			#--------------------------------------------------------------
 			# print ("\n>>>>>> Datos Generales de la CPIC: Sujetos <<<<<<<<")
@@ -56,7 +57,7 @@ class CartaporteInfo (EcuInfo):
 			remitente                             = Utils.checkLow (self.getSubjectInfo ("02_Remitente"))
 			self.ecudoc ["10_PaisRemitente"]      = remitente ["pais"]
 			self.ecudoc ["11_TipoIdRemitente"]    = remitente ["tipoId"]
-			self.ecudoc ["12_NroIdRemitente"]	    = remitente ["numeroId"]
+			self.ecudoc ["12_NroIdRemitente"]     = remitente ["numeroId"]
 			self.ecudoc ["13_NroCertSanitario"]	  = None
 			self.ecudoc ["14_NombreRemitente"]    = remitente ["nombre"]
 			self.ecudoc ["15_DireccionRemitente"] = remitente ["direccion"]
@@ -112,7 +113,7 @@ class CartaporteInfo (EcuInfo):
 			self.ecudoc ["39_CondicionesPago"]       = condiciones ["pago"]
 
 			unidades                       = self.getUnidadesMedidaInfo ()
-			bultosInfo                     = self.getBultosInfo ()
+			bultosInfo                     = self.getBultosInfoCartaporte ()
 			self.ecudoc ["40_PesoNeto"]	   = unidades ["pesoNeto"]
 			self.ecudoc ["41_PesoBruto"]   = unidades ["pesoBruto"]
 			self.ecudoc ["42_TotalBultos"] = bultosInfo ["cantidad"]
@@ -175,37 +176,31 @@ class CartaporteInfo (EcuInfo):
 			self.ecudoc ["78_NroCertSanitario"] = self.ecudoc ["13_NroCertSanitario"]
 			self.ecudoc ["79_DescripcionCarga"] = bultosInfo ["descripcion"]
 
+			# Update fields depending of other fields (or depending of # "empresa")
+			self.updateFieldsFromFields ()
+
 		except:
 			Utils.printx (f"ALERTA: Problemas extrayendo información del documento '{self.fieldsJsonFile}'")
 			Utils.printx (traceback_format_exc())
 			raise
 
-		#CartaporteInfo.printFieldsValues (ecudoc)
+		Utils.redirectOutput ("log-extraction-cartaporte.log", logFile, stdoutOrg)
 		return (self.ecudoc)
+
+#	#------------------------------------------------------------------
+#	# Update fields that depends of other fields
+#	#------------------------------------------------------------------
+#	def updateFieldsFromFields (self):
+#		self.numero = self.getNumeroDocumento ()
+#		self.pais   = Utils.getPaisFromDocNumber (self.numero)
 
 	#------------------------------------------------------------------
 	#-- First level functions for each Ecuapass field
 	#------------------------------------------------------------------
-	def getDistrito (self):
-		return "TULCAN" + "||LOW"
-
-	def getMRN (self):
-		MRN = self.empresa ["MRN"]
-		return MRN if MRN else "||LOW"
-
 	def getMSN (self):
 		MSN = self.empresa ["MSN"]
 		return MSN if MSN else "||LOW"
 
-	def getNombreEmpresa (self):
-		return self.empresa ["nombre"]
-
-	def getDireccionEmpresa (self):
-		return self.empresa ["direccion"]
-
-	def getIdEmpresa (self):
-		id = self.empresa ["idNumero"]
-		return id
 	#------------------------------------------------------------
 	# Return the code number from the text matching a "deposito"
 	#-- BOTERO-SOTO en casilla 21 o 22, NTA en la 22 ------------
@@ -219,16 +214,13 @@ class CartaporteInfo (EcuInfo):
 				#reBodega    = rf'BODEGA[S]?\s+\b(\w*)\b'
 				reBodega    = rf'BODEGA[S]?{reWordSep}\b(\w*)\b'
 				bodegaText  = Extractor.getValueRE (reBodega, text)
-				Utils.printx (f"Extrayendo código para el deposito '{bodegaText}'")
-				if bodegaText == None:
-					return None
-
-				depositosDic = Extractor.getDataDic ("depositos_tulcan.txt", self.resourcesPath)
-				
-				for id in depositosDic:
-					if bodegaText in depositosDic [id]:
-						Utils.printx (f"...Encontrado código '{id}' para '{depositosDic [id]}'")
-						return id
+				if bodegaText != None:
+					Utils.printx (f"Extrayendo código para el deposito '{bodegaText}'")
+					depositosDic = Extractor.getDataDic ("depositos_tulcan.txt", self.resourcesPath)
+					
+					for id in depositosDic:
+						if bodegaText in depositosDic [id]:
+							return id
 			except:
 				Utils.printException (f"Obteniendo bodega desde texto '{text}'")
 		return "||LOW"
@@ -246,16 +238,21 @@ class CartaporteInfo (EcuInfo):
 	# Get "Entrega" location and suggest a date if it is None
 	#-----------------------------------------------------------
 	def getEntregaLocation (self, key):
+		idEmpresa = self.getIdEmpresa ()
 		location = self.getLocationInfo (key)
 		try:
 			# Add a week to 'entrega' from 'embarque' date
-			if location ["fecha"] == "||LOW":
+			if location ["fecha"] == "||LOW" or location ["fecha"] is None:
 				fechaEmbarque      = self.ecudoc ["34_FechaEmbarque"]
 				date_obj           = datetime.strptime (fechaEmbarque, "%d-%m-%Y")
-				new_date_obj       = date_obj  # Fecha actual
+				new_date_obj       = date_obj  # Fecha igual a la de Embarque
 
-				if "BYZA" in self.getNombreEmpresa().upper():
+				if "NTA" in idEmpresa:
+					new_date_obj       = datetime.today()
+				elif "BYZA" in idEmpresa:
 					new_date_obj       = date_obj + timedelta(weeks=2)   # 15 días
+				elif "LOGITRANS" in idEmpresa:
+					new_date_obj       = date_obj + timedelta(weeks=1)   # 07 días
 
 				location ["fecha"] = new_date_obj.strftime("%d-%m-%Y") + "||LOW"
 		except:
@@ -317,28 +314,35 @@ class CartaporteInfo (EcuInfo):
 	#-----------------------------------------------------------
 	#-- Get 'total bultos' and 'tipo embalaje' -----------------
 	#-----------------------------------------------------------
-	def getBultosInfo (self):
-		bultosInfo = Utils.createEmptyDic (["cantidad", "embalaje", "marcas", "descripcion"])
-		try:
-			# Cantidad
-			text             = self.fields ["10_CantidadClase_Bultos"]["value"]
-			bultosInfo ["cantidad"] = Extractor.getNumber (text)
-			bultosInfo ["embalaje"] = Extractor.getTipoEmbalaje (text, self.fieldsJsonFile)
+	def getBultosInfoCartaporte (self):
+		ecuapassFields = {"cantidad": "10_CantidadClase_Bultos", "marcas":
+			   "11_MarcasNumeros_Bultos", "descripcion": "12_Descripcion_Bultos"}
 
-			# Marcas 
-			text = self.fields ["11_MarcasNumeros_Bultos"]["value"]
-			bultosInfo ["marcas"] = "SIN MARCAS" if text == None else text
-
-			# Descripcion
-			descripcion = self.fields ["12_Descripcion_Bultos"]["content"]
-			descripcion = self.cleanWaterMark (descripcion)
-			bultosInfo ["descripcion"] = self.getMercanciaDescripcion (descripcion)
-
-		except:
-			Utils.printException ("Obteniendo información de 'Bultos'", text)
-
+		bultosInfo = self.getBultosInfo (ecuapassFields)
 		return bultosInfo
 
+#	def getBultosInfo (self):
+#		bultosInfo = Utils.createEmptyDic (["cantidad", "embalaje", "marcas", "descripcion"])
+#		try:
+#			# Cantidad
+#			text             = self.fields ["10_CantidadClase_Bultos"]["value"]
+#			bultosInfo ["cantidad"] = Extractor.getNumber (text)
+#			bultosInfo ["embalaje"] = Extractor.getTipoEmbalaje (text)
+#
+#			# Marcas 
+#			text = self.fields ["11_MarcasNumeros_Bultos"]["value"]
+#			bultosInfo ["marcas"] = "SIN MARCAS" if text == None else text
+#
+#			# Descripcion
+#			descripcion = self.fields ["12_Descripcion_Bultos"]["content"]
+#			descripcion = self.cleanWaterMark (descripcion)
+#			bultosInfo ["descripcion"] = self.getMercanciaDescripcion (descripcion)
+#
+#		except:
+#			Utils.printException ("Obteniendo información de 'Bultos'", text)
+#
+#		return bultosInfo
+#
 	#--------------------------------------------------------------------
 	#-- Search "pais" for "ciudad" in previous document boxes
 	#--------------------------------------------------------------------
@@ -420,10 +424,35 @@ class CartaporteInfo (EcuInfo):
 	#-- BYZA format: <Nombre>\n<Direccion>\n<PaisCiudad><TipoID:ID> -----
 	#-------------------------------------------------------------------
 	#-- Get subject info: nombre, dir, pais, ciudad, id, idNro
-	def getSubjectInfo (self, subjectType):
-		text	= Utils.getValue (self.fields, subjectType)
-		subject = Extractor.getSubjectInfoFromText (text, self.resourcesPath, subjectType)
+#	def getSubjectInfo (self, subjectType):
+#		text	= Utils.getValue (self.fields, subjectType)
+#		subject = Extractor.getSubjectInfoFromText (text, self.resourcesPath, subjectType)
+#		return (subject)
+
+	#-------------------------------------------------------------------
+	#-- Get subject info: nombre, dir, pais, ciudad, id, idNro ---------
+	#-- NTA format: <Nombre> <Direccion> <ID> <PaisCiudad> -----
+	#-------------------------------------------------------------------
+	#-- Get subject info: nombre, dir, pais, ciudad, id, idNro
+	def getSubjectInfo (self, key):
+		subject = {"nombre":None, "direccion":None, "pais": None, 
+		           "ciudad":None, "tipoId":None, "numeroId": None}
+		text	= Utils.getValue (self.fields, key)
+		try:
+			text    = re.sub ("\s*//\s*", "", text)   # For SILOG "//" separator cartaportes
+			text, subject = Extractor.removeSubjectId (text, subject, key)
+			text, subject = Extractor.removeSubjectCiudadPais (text, subject, self.resourcesPath, key)
+			text, subject = Extractor.removeSubjectNombreDireccion (text, subject, key)
+		except:
+			Utils.printException (f"Obteniendo datos del sujeto: '{key}' en el texto: '{text}'")
+
 		return (subject)
+
+	#-------------------------------------------------------------------
+	#-- Get pais destinatario
+	#-------------------------------------------------------------------
+	def getPaisDestinatario (self):
+		return self.ecudoc ["16_PaisDestinatario"]
 
 #--------------------------------------------------------------------
 # Call main 

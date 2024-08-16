@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='ecuapassdocs',  # Package name
-    version='0.79',  # Package version
+    version='0.803',  # Package version
     url="https://github.com/lgarreta/ecuapassdocs",
     author='Luis Garreta',
     author_email='lgarreta@gmail.com',
@@ -21,6 +21,7 @@ setup(
 		"Pillow==10.1.0"
 	], 
 	logs = {
+		"0.803"  : "30-Mayo : Fixed info: 'embalaje' and 'fecha entrega'",
 		"0.79"   : "Search codebin form by NAME. Added settings for NTA",
 		"0.78"   : "Improved infos:depositos, dates, vehiculo",
 		"0.77"   : "Improved update (posprocessing) ECUAPASS file",

@@ -1,8 +1,48 @@
 {
+    "id": {
+        "align": "left",
+        "class": "input_numero",
+        "ecudocsField": "",
+        "codebinField": "",
+        "font": "large",
+        "fontSize": "26px",
+        "height": 28,
+        "maxChars": 10,
+        "maxLines": 1,
+        "restrictions": [
+			"hidden",
+            "readonly",
+            "color=red"
+        ],
+        "value": "",
+        "width": 233,
+        "x": 300,
+        "y": 88
+    },
+    "numero": {
+        "align": "left",
+        "class": "input_numero",
+        "ecudocsField": "",
+        "codebinField": "",
+        "font": "large",
+        "fontSize": "26px",
+        "height": 28,
+        "maxChars": 10,
+        "maxLines": 1,
+        "restrictions": [
+			"hidden",
+            "readonly",
+            "color=red"
+        ],
+        "value": "",
+        "width": 233,
+        "x": 300,
+        "y": 88
+	},
     "txt0a": {
         "align": "left", 
         "class": "input_numero", 
-        "field": "0a_Pais", 
+        "ecudocsField": "0a_Pais", 
         "font": "large", 
         "fontSize": "26px", 
         "height": 28, 
@@ -24,7 +64,7 @@
         ], 
         "align": "left", 
         "class": "input_numero", 
-        "field": "00b_Numero", 
+        "ecudocsField": "00b_Numero", 
         "font": "large", 
         "fontSize": "26px", 
         "height": 28, 
@@ -41,7 +81,7 @@
         ], 
         "align": "left", 
         "class": "input_general", 
-        "field": "01_Transportista", 
+        "ecudocsField": "01_Transportista", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 124, 
@@ -55,7 +95,7 @@
     "txt02": {
         "align": "left", 
         "class": "input_empresa", 
-        "field": "02_Declarante", 
+        "ecudocsField": "02_Declarante", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 70, 
@@ -69,7 +109,7 @@
     "txt03": {
         "align": "left", 
         "class": "input_empresa", 
-        "field": "03_Remitente", 
+        "ecudocsField": "03_Remitente", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 70, 
@@ -83,7 +123,7 @@
     "txt04": {
         "align": "left", 
         "class": "input_empresa", 
-        "field": "04_Destinatario", 
+        "ecudocsField": "04_Destinatario", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 70, 
@@ -97,7 +137,7 @@
     "txt05": {
         "align": "left", 
         "class": "input_empresa", 
-        "field": "05_Consignatario", 
+        "ecudocsField": "05_Consignatario", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 70, 
@@ -111,7 +151,7 @@
     "txt06": {
         "align": "left", 
         "class": "input_lugar", 
-        "field": "06_Aduana_Carga", 
+        "ecudocsField": "06_Aduana_Carga", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 64, 
@@ -125,7 +165,7 @@
     "txt07": {
         "align": "left", 
         "class": "input_lugar", 
-        "field": "07_Aduana_Partida", 
+        "ecudocsField": "07_Aduana_Partida", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 70, 
@@ -139,7 +179,7 @@
     "txt08": {
         "align": "left", 
         "class": "input_general", 
-        "field": "08_Aduana_Destino", 
+        "ecudocsField": "08_Aduana_Destino", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 40, 
@@ -153,7 +193,7 @@
     "txt09": {
         "align": "left", 
         "class": "input_general", 
-        "field": "09_Pais_Mercancia", 
+        "ecudocsField": "09_Pais_Mercancia", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 40, 
@@ -167,7 +207,7 @@
     "txt10": {
         "align": "left", 
         "class": "input_general", 
-        "field": "10_PlacaPais_Vehiculos", 
+        "ecudocsField": "10_PlacaPais_Vehiculos", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 60, 
@@ -181,7 +221,7 @@
     "txt11": {
         "align": "left", 
         "class": "input_general", 
-        "field": "11_PlacaPais_UnidadesCarga", 
+        "ecudocsField": "11_PlacaPais_UnidadesCarga", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 60, 
@@ -195,7 +235,7 @@
     "txt12": {
         "align": "left", 
         "class": "input_general", 
-        "field": "12_Numeros_Manifiestos", 
+        "ecudocsField": "12_Numeros_Manifiestos", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 60, 
@@ -209,7 +249,7 @@
     "txt13": {
         "align": "left", 
         "class": "input_general", 
-        "field": "13_Ids_Contenedores", 
+        "ecudocsField": "13_Ids_Contenedores", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 60, 
@@ -223,7 +263,7 @@
     "txt14": {
         "align": "left", 
         "class": "input_general", 
-        "field": "14_Numeros_Precintos", 
+        "ecudocsField": "14_Numeros_Precintos", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 99, 
@@ -237,7 +277,7 @@
     "txt15": {
         "align": "left", 
         "class": "input_cartaporte", 
-        "field": "15_Cartaporte", 
+        "ecudocsField": "15_Cartaporte", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 305, 
@@ -251,7 +291,7 @@
     "txt16": {
         "align": "left", 
         "class": "input_general", 
-        "field": "16_Descripcion", 
+        "ecudocsField": "16_Descripcion", 
         "font": "small", 
         "fontSize": "12px", 
         "height": 305, 
@@ -265,7 +305,7 @@
     "txt17": {
         "align": "left", 
         "class": "input_general", 
-        "field": "17_Cantidad_Bultos", 
+        "ecudocsField": "17_Cantidad_Bultos", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 305, 
@@ -279,7 +319,7 @@
     "txt18": {
         "align": "left", 
         "class": "input_general", 
-        "field": "18_Marca_Bultos", 
+        "ecudocsField": "18_Marca_Bultos", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 305, 
@@ -293,7 +333,7 @@
     "txt19_1": {
         "align": "left", 
         "class": "input_general", 
-        "field": "19a_Peso_Bruto", 
+        "ecudocsField": "19a_Peso_Bruto", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 305, 
@@ -307,7 +347,7 @@
     "txt19_2": {
         "align": "left", 
         "class": "input_general", 
-        "field": "19aa_Peso_Bruto_Total", 
+        "ecudocsField": "19aa_Peso_Bruto_Total", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 25, 
@@ -321,7 +361,7 @@
     "txt19_3": {
         "align": "left", 
         "class": "input_general", 
-        "field": "19b_Peso_Neto", 
+        "ecudocsField": "19b_Peso_Neto", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 305, 
@@ -335,7 +375,7 @@
     "txt19_4": {
         "align": "left", 
         "class": "input_general", 
-        "field": "19bb_Peso_Neto_Total", 
+        "ecudocsField": "19bb_Peso_Neto_Total", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 25, 
@@ -349,7 +389,7 @@
     "txt20_1": {
         "align": "left", 
         "class": "input_general", 
-        "field": "20_Otra_Unidad", 
+        "ecudocsField": "20_Otra_Unidad", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 305, 
@@ -363,7 +403,7 @@
     "txt20_2": {
         "align": "left", 
         "class": "input_general", 
-        "field": "20a_Otro_Unidad_Total", 
+        "ecudocsField": "20a_Otro_Unidad_Total", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 25, 
@@ -377,7 +417,7 @@
     "txt21": {
         "align": "left", 
         "class": "input_general", 
-        "field": "21_Incoterms", 
+        "ecudocsField": "21_Incoterms", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 25, 
@@ -391,7 +431,7 @@
     "txt22": {
         "align": "left", 
         "class": "input_general", 
-        "field": "22_Aduana_Cruce", 
+        "ecudocsField": "22_Aduana_Cruce", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 25, 
@@ -405,7 +445,7 @@
     "txt23": {
         "align": "left", 
         "class": "input_general", 
-        "field": "23_Fecha_Emision", 
+        "ecudocsField": "23_Fecha_Emision", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 29, 
@@ -419,7 +459,7 @@
     "txt24": {
         "align": "left", 
         "class": "input_general", 
-        "field": "24_Observaciones", 
+        "ecudocsField": "24_Observaciones", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 50, 
@@ -433,7 +473,7 @@
     "txt25": {
         "align": "left", 
         "class": "input_general", 
-        "field": "25_Anexos", 
+        "ecudocsField": "25_Anexos", 
         "font": "normal", 
         "fontSize": "14px", 
         "height": 49, 
@@ -450,7 +490,7 @@
         ], 
         "align": "left", 
         "class": "input_numero", 
-        "field": "26_OriginalCopia", 
+        "ecudocsField": "26_OriginalCopia", 
         "font": "large", 
         "fontSize": "26px", 
         "height": 23, 

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-import re, os, json, sys
-from traceback import format_exc as traceback_format_exc
-from datetime import datetime, timedelta
+import re, os, sys
 
 from .ecuapass_info_cartaporte import CartaporteInfo
 from .ecuapass_extractor import Extractor
@@ -20,7 +18,7 @@ def main ():
 	args = sys.argv
 	fieldsJsonFile = args [1]
 	runningDir = os.getcwd ()
-	mainFields = CartaporteInfo.getMainFields (fieldsJsonFile, runningDir)
+	mainFields = CartaporteInfo.getEcuapassFields (fieldsJsonFile, runningDir)
 	Utils.saveFields (mainFields, fieldsJsonFile, "Results")
 
 #----------------------------------------------------------
@@ -32,14 +30,6 @@ class CartaporteNTA (CartaporteInfo):
 
 	def getEmpresaInfo (self):
 		return EcuData.getEmpresaInfo ("NTA")
-
-	#------------------------------------------------------------------
-	#-- First level functions for each Ecuapass field
-	#------------------------------------------------------------------
-	def getMRN (self):
-		text   = Utils.getValue (self.fields, "22_Observaciones")
-		MRN    = Extractor.getMRN (text)
-		return Utils.checkLow (MRN)
 
 	#-------------------------------------------------------------------
 	#-- Get subject info: nombre, dir, pais, ciudad, id, idNro ---------
@@ -59,6 +49,22 @@ class CartaporteNTA (CartaporteInfo):
 			Utils.printException (f"Obteniendo datos del sujeto: '{key}' en el texto: '{text}'")
 
 		return (subject)
+
+#	#-----------------------------------------------------------
+#	#-- Get 'total bultos' and 'tipo embalaje' -----------------
+#	#-----------------------------------------------------------
+#	def getBultosInfo (self):
+#		print ("+++ DEBUG: getBultosInfo: ")
+#		bultosInfo = super ().getBultosInfo ()
+#		try:
+#			# Embalaje
+#			text = self.fields ["11_MarcasNumeros_Bultos"]["value"]
+#			print ("+++ DEBUG: getBultosInfo: text: ", text)
+#			bultosInfo ["embalaje"] = Extractor.getTipoEmbalaje (text)
+#		except:
+#			Utils.printException ("Obteniendo información de 'Embalaje'", text)
+#
+#		return bultosInfo
 
 #--------------------------------------------------------------------
 # Call main 

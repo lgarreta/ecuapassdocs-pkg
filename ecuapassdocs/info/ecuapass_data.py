@@ -22,31 +22,31 @@ class EcuData:
 			"MSN": None,
 			"permisos" : {"originario":"PO-CO-0033-22", "servicios1": "PO-CO-0033-22"}
 		},
-		"BOTERO": {
-			'id'     : "BOTERO",
-			"nombre" : "EDUARDO BOTERO SOTO S.A.",
-			"direccion": "Carrera 42 No 75-63 Aut. Sur, Itagui (Antioquia)",
-			"idTipo" : "NIT", 
-			"idNumero" : "890.901.321-5",
-			"modelCartaportes": "Model_Cartaportes_Botero",
-			"modelManifiestos": "Model_Manifiestos_Botero",
-			"modelDeclaraciones": None,
-			"MRN": None,
-			"MSN": None,
-		},
 		"NTA" : { 
-			'id'     : "NTA",
-			"nombre" : "NUEVO TRANSPORTE DE AMERICA COMPAÑIA LIMITADA", 
-			"direccion": "ARGENTINA Y JUAN LEON MERA - TULCAN",
-			"idTipo" : "RUC", 
-			"idNumero" : "1791834461001",
-			"modelCartaportes": "Model_Cartaportes_NTA_BYZA",
-			"modelManifiestos": "Manifiestos_NTA_BYZA_Template",
+			'id'         : "NTA",
+			"nombre"     : "NUEVO TRANSPORTE DE AMERICA COMPAÑIA LIMITADA", 
+			"direccion"  : "ARGENTINA Y JUAN LEON MERA - TULCAN",
+			"direccion02": "Cll Amazonas Mz C Lote 25B Zona Comercial Aguas Verdes - Aguas Verdes (Perú)",
+			"idTipo"     : "RUC", 
+			"idNumero"   : "1791834461001",
+			"modelCartaportes"  : "Model_Cartaportes_NTA_BYZA",
+			"modelManifiestos"  : "Manifiestos_NTA_BYZA_Template",
 			"modelDeclaraciones": "Model_Declaraciones_NTA_Single",
-			"MRN": "CEC202340350941",
 			"MSN": "0001",
 			"permisos" : {"originario":"C.I.-E.C.-0060-04",
 				          "servicios1":"P.P.S.CO015905", "servicios2":"P.P.S.PE000210"}
+		},
+		"LOGITRANS" : { 
+			'id'       : "LOGITRANS",
+			"nombre"   : "TRANSPORTES LOGITRANS-ACROS S.A.",
+			"direccion": "CALDERON NRO. 63-052 Y URUGUAY",
+			"idTipo"   : "RUC", 
+			"idNumero" : "0491507748001",
+			"modelCartaportes": "Model_Cartaportes_NTA_BYZA",
+			"modelManifiestos": "Manifiestos_NTA_BYZA_Template",
+			"modelDeclaraciones": "Model_Declaraciones_NTA_Single",
+			"MSN": "0001",
+			"permisos" : {"originario":"PO-EC-0005-20", "servicios1": "PO-EC-0005-20"}
 		},
 		"SILOGISTICA": {
 			'id'     : "SILOGISTICA",
@@ -57,7 +57,6 @@ class EcuData:
 			"modelCartaportes": "Model_Cartaportes_Silogistica",
 			"modelManifiestos": "Model_Manifiestos_Silogistica",
 			"modelDeclaraciones": "Model_Declaraciones_NTA_Single",
-			"MRN": "||LOW",
 			"MSN": "||LOW"
 		},
 		"SYTSA": {
@@ -69,29 +68,28 @@ class EcuData:
 			"modelCartaportes": "Model_Cartaportes_NTA_SILOG",
 			"modelManifiestos": "Model_Manifiestos_NTA",
 			"modelDeclaraciones": "Model_Declaraciones_NTA_Single",
-			"MRN": None,
+			"MSN": None
+		},
+		"BOTERO": {
+			'id'     : "BOTERO",
+			"nombre" : "EDUARDO BOTERO SOTO S.A.",
+			"direccion": "Carrera 42 No 75-63 Aut. Sur, Itagui (Antioquia)",
+			"idTipo" : "NIT", 
+			"idNumero" : "890.901.321-5",
+			"modelCartaportes": "Model_Cartaportes_Botero",
+			"modelManifiestos": "Model_Manifiestos_Botero",
+			"modelDeclaraciones": None,
 			"MSN": None
 		}
 	}
 
+	configuracion = {
+		"dias_cartaportes_recientes" : 4
+	}
+
+
 	def getEmpresaInfo (empresaName):
 		return EcuData.empresas [empresaName]
-
-	def old_getEmpresaInfo (ecuapassName):
-		empresa = {"nombre":None, "direccion":None, "idTipo": None,
-		           "RUC": None, "idNumero":None, "MRN":None, "MSN":None}
-		empresaName = None
-		try:
-			if "NUEVO TRANSPORTE DE AMERICA" in ecuapassName:
-				empresaName = "N.T.A."
-			elif "PROVIZCAINO" in ecuapassName:
-				empresaName = "SILOGISTICA"
-
-			empresa = EcuData.empresas [empresaName]
-		except:
-			print (f"EXCEPCION: Obteniendo datos de la empresa: {empresaName}")
-			print (traceback_format_exc())
-		return (empresa)
 
 	def getEmpresaId (empresa):
 		return EcuData.empresas[empresa]["numeroId"]

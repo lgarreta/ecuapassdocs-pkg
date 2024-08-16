@@ -16,7 +16,7 @@ def main ():
 	args = sys.argv
 	fieldsJsonFile = args [1]
 	runningDir = os.getcwd ()
-	mainFields = ManifiestoInfo.getMainFields (fieldsJsonFile, runningDir)
+	mainFields = ManifiestoInfo.getEcuapassFields (fieldsJsonFile, runningDir)
 	Utils.saveFields (mainFields, fieldsJsonFile, "Results")
 
 #----------------------------------------------------------
@@ -26,9 +26,13 @@ class ManifiestoInfo (EcuInfo):
 	def __init__(self, fieldsJsonFile, runningDir):
 		super().__init__ ("MANIFIESTO", fieldsJsonFile, runningDir)
 
+	def __str__(self):
+		return f"MANIFIESTO" 
+
 	#-- Get data and value from document main fields
-	def getMainFields (self):
+	def getEcuapassFields (self):
 		Utils.runningDir   = self.runningDir      # Dir to copy and get images and data
+		logFile, stdoutOrg= Utils.redirectOutput ("log-extraction-manifiesto.log")
 
 		try:
 			#print ("\n>>>>>> Identificacion del Transportista Autorizado <<<")
@@ -56,16 +60,18 @@ class ManifiestoInfo (EcuInfo):
 			self.ecudoc ["16_DirTransportista"]    = self.getDireccionEmpresa ()
 
 			#print ("\n>>>>>> Identificacion de la Unidad de Carga (Remolque) <<<")
-			remolque                             = self.getRemolqueInfo ()
+			#remolque                             = self.getRemolqueInfo ()
+			remolque                             = self.getVehiculoRemolqueInfo ("REMOLQUE")
 			self.ecudoc ["24_Marca_remolque"]    = remolque ["marca"]
 			self.ecudoc ["25_Ano_Fabricacion"]   = remolque ["anho"]
 			self.ecudoc ["26_Placa_remolque"]    = remolque ["placa"]
 			self.ecudoc ["27_Pais_remolque"]     = remolque ["pais"]
 			self.ecudoc ["28_Nro_Certificado"]   = remolque ["certificado"]
-			self.ecudoc ["29_Otra_Unidad"]       = remolque ["tipo"]
+			self.ecudoc ["29_Otra_Unidad"]       = remolque ["chasis"]
 
 			#print ("\n>>>>>> Identificacion del Vehículo Habilitado <<<")
-			vehiculo                             = self.getVehiculoInfo (remolque)
+			#vehiculo                             = self.getVehiculoInfo (remolque)
+			vehiculo                             = self.getVehiculoRemolqueInfo ("VEHICULO", remolque)
 			self.ecudoc ["17_Marca_Vehiculo"]    = vehiculo ["marca"]
 			self.ecudoc ["18_Ano_Fabricacion"]   = vehiculo ["anho"]
 			self.ecudoc ["19_Pais_Vehiculo"]     = vehiculo ["pais"]
@@ -107,6 +113,8 @@ class ManifiestoInfo (EcuInfo):
 			self.ecudoc ["49_Pais_Descarga"]     = Utils.checkLow (descarga ["pais"])
 			self.ecudoc ["50_Ciudad_Descarga"]   = Utils.checkLow (descarga ["ciudad"])
 
+			#self.updateDistrito ("04_Distrito", descarga ["pais"]) # LOGITRANS: Update after knowing destination country
+
 			cargaInfo                            = self.getCargaInfo ()
 			self.ecudoc ["51_Tipo_Carga"]        = cargaInfo ["tipo"]
 			self.ecudoc ["52_Descripcion_Carga"] = cargaInfo ["descripcion"]
@@ -138,13 +146,13 @@ class ManifiestoInfo (EcuInfo):
 
 			#print ("\n>>>>>> Detalles finales <<<")
 			self.ecudoc ["66_Secuencia"]         = Utils.addLow (self.getSecuencia ())
-			self.ecudoc ["67_MRN"]               = Utils.addLow (self.getMRN ())
-			self.ecudoc ["68_MSN"]               = Utils.addLow (self.getMSN ())
+			self.ecudoc ["67_MRN"]               = self.getMRN ()
+			self.ecudoc ["68_MSN"]               = self.getMSN ()
 
-			bultos                         = self.getBultosInfo ()
+			bultos                         = self.getBultosInfoManifiesto ()
 			self.ecudoc ["69_CPIC"]        = Utils.checkLow (bultos ["cartaporte"])
 			self.ecudoc ["70_TotalBultos"] = Utils.checkLow (bultos ["cantidad"])
-			self.ecudoc ["71_Embalaje"]	   = Utils.addLow (bultos ["embalaje"])
+			self.ecudoc ["71_Embalaje"]	   = Utils.checkLow (bultos ["embalaje"])
 			self.ecudoc ["72_Marcas"]      = Utils.checkLow (bultos ["marcas"])
 
 			# Unidades
@@ -161,11 +169,15 @@ class ManifiestoInfo (EcuInfo):
 			self.ecudoc ["81_Descripcion"]      = bultos ['descripcion']
 			self.ecudoc ["82_Precinto"]         = Utils.getValue (self.fields, "27_Carga_Precintos")
 
+			# Update fields depending of other fields (or depending of # "empresa")
+			self.updateFieldsFromFields ()
+
 		except:
 			Utils.printx (f"ALERTA: Problemas extrayendo información del documento '{self.fieldsJsonFile}'")
 			Utils.printx (traceback_format_exc())
 			raise
 
+		Utils.redirectOutput ("log-extraction-manifiesto.log", logFile, stdoutOrg)
 		return (self.ecudoc)
 
 	#------------------------------------------------------------------
@@ -179,15 +191,15 @@ class ManifiestoInfo (EcuInfo):
 
 			text                                = Utils.getValue (self.fields, "40_Fecha_Emision")
 			transportista ["fechaEmision"]      = Extractor.getDate (text, self.resourcesPath)
-			transportista ["distrito"]          = "TULCAN||LOW"
+			transportista ["distrito"]          = self.getDistrito ()
 			transportista ["MCI"]               = self.getNumeroDocumento ()
-			transportista ["empresa"]           = None    # Bot select the only first one
+			transportista ["empresa"]           = None    # Bot select the first option in BoxField
 		except:
 			Utils.printException ("Obteniendo información del transportista")
 		return (transportista)
 
 	#------------------------------------------------------------------
-	# Permisos info
+	# Permisos info: Implemented in subclasses
 	#------------------------------------------------------------------
 	def getPermisosInfo (self):
 		permisos = Utils.createEmptyDic (["tipoPermisoCI", "tipoPermisoPEOTP", 
@@ -209,7 +221,7 @@ class ManifiestoInfo (EcuInfo):
 			else:
 				Utils.printException (f"Tipo permiso desconocido en el texto: '{text}'")
 		except:
-			Utils.printException ("Obteniendo información del permisos")
+			Utils.printException ("Obteniendo información de permisos")
 
 		return (permisos)
 
@@ -235,80 +247,116 @@ class ManifiestoInfo (EcuInfo):
 		return outPermiso
 		
 	#------------------------------------------------------------------
-	# Vehiculo/Remolque information 
+	# Get Vehiculo/Remolque information 
 	#------------------------------------------------------------------
-	def getValidValue (self, value):
-		if value == None:
-			return None
-		elif value.upper().startswith ("XX") or value.upper () == "N/A" or value is None:
-			return None
-		else: 
-			return value
+	def getVehiculoRemolqueInfo (self, type, remolque=None):
+		transport = {key:None for key in ["marca","anho","pais","placa","chasis","certificado","tipo"]}
 
-	#------------------------------------------------------------------
-	# Vehiculo/Remolque information 
-	#------------------------------------------------------------------
-	def getVehiculoInfo (self, remolque):
-		keys = {"marca":"04_Camion_Marca", "anho":"05_Camion_AnoFabricacion", 
-		        "placaPais":"06_Camion_PlacaPais", "chasis":"07_Camion_Chasis", 
-				"certificado":"08_Certificado_Habilitacion"}
-		vehiculo = {key:None for key in ["marca","anho","pais","placa","chasis","certificado","tipo"]}
-		try:
-			vehiculo ["marca"]       = self.getValidValue (Utils.getValue (self.fields, keys ["marca"]))
-			vehiculo ["anho"]        = self.getValidValue (Utils.getValue (self.fields, keys ["anho"]))
-			placaPaisText            = self.getValidValue (Utils.getValue (self.fields, keys ["placaPais"]))
-			if placaPaisText:
-				placaPais            = Extractor.getPlacaPais (placaPaisText) if placaPaisText else None
-				vehiculo ["pais"]    = self.getValidValue (placaPais ["pais"])
-				vehiculo ["placa"]   = self.getValidValue (placaPais ["placa"])
-			vehiculo ["chasis"]      = self.getValidValue (Utils.getValue (self.fields, keys ["chasis"]))
-			vehiculo ["certificado"] = self.getCheckCertificadoVehiculo (keys ["certificado"])
-			vehiculo ["tipo"]        = self.getTipoVehiculo ("VEHICULO", remolque)
-		except Exception as e:
-			Utils.printException (f"Extrayendo información del vehículo", e)
-		return vehiculo
-
-	#------------------------------------------------------------------
-	# Vehiculo/Remolque information 
-	#------------------------------------------------------------------
-	def getRemolqueInfo (self):
-		keys = {"marca":"09_Remolque_Marca", "anho":"10_Remolque_AnoFabricacion",
-		        "placaPais":"11_Remolque_PlacaPais", "chasis": "12_Remolque_Otro", 
-				"certificado": "08_Certificado_Habilitacion"}
-		vehiculo = {key:None for key in ["marca","anho","pais","placa","chasis","certificado","tipo"]}
-		try:
-			vehiculo ["marca"]       = self.getValidValue (Utils.getValue (self.fields, keys ["marca"]))
-			vehiculo ["anho"]        = self.getValidValue (Utils.getValue (self.fields, keys ["anho"]))
-			placaPaisText            = self.getValidValue (Utils.getValue (self.fields, keys ["placaPais"]))
-			if placaPaisText:
-				placaPais            = Extractor.getPlacaPais (placaPaisText) if placaPaisText else None
-				vehiculo ["pais"]    = self.getValidValue (placaPais ["pais"])
-				vehiculo ["placa"]   = self.getValidValue (placaPais ["placa"])
-			vehiculo ["chasis"]      = self.getValidValue (Utils.getValue (self.fields, keys ["chasis"]))
-			vehiculo ["certificado"] = self.getCheckCertificadoRemolque (keys ["certificado"])
-			vehiculo ["tipo"]        = self.getTipoVehiculo ("REMOLQUE", vehiculo)
-		except Exception as e:
-			Utils.printException (f"Extrayendo información del vehículo", e)
-		return vehiculo
-
-
-	#-- Overwriten in subclases: Get tipo vehículo 
-	def getTipoVehiculo  (self, tipo, remolque=None):
-		if tipo == "VEHICULO": 
-			return "TRACTOCAMION"
-		elif tipo == "REMOLQUE": 
-			return "SEMIREMOLQUE"
+		keys = None
+		if type == "VEHICULO":
+			keys = {"marca":"04_Camion_Marca", "anho":"05_Camion_AnoFabricacion", "placaPais":"06_Camion_PlacaPais", 
+		   			"chasis":"07_Camion_Chasis", "certificado":"08_Certificado_Habilitacion"}
+		elif type == "REMOLQUE":
+			keys = {"marca":"09_Remolque_Marca", "anho":"10_Remolque_AnoFabricacion", "placaPais":"11_Remolque_PlacaPais", 
+					"chasis": "12_Remolque_Otro", "certificado": "08_Certificado_Habilitacion"}
 		else:
-			return NONE
+			print (f"ERROR: Tipo de transporte desconocido: '{type}'")
+			return transport
+ 
+		try:
+			transport ["marca"]       = self.getTruckValue (type, Utils.getValue (self.fields, keys ["marca"]))
+			transport ["anho"]        = self.getTruckValue (type, Utils.getValue (self.fields, keys ["anho"]))
+			placaPaisText             = self.getTruckValue (type, Utils.getValue (self.fields, keys ["placaPais"]))
+			if placaPaisText:
+				placaPais             = Extractor.getPlacaPais (placaPaisText) if placaPaisText else None
+				transport ["pais"]    = self.getTruckValue (type, placaPais ["pais"])
+				transport ["placa"]   = self.getTruckValue (type, placaPais ["placa"])
+			transport ["chasis"]      = self.getTruckValue (type, Utils.getValue (self.fields, keys ["chasis"]))
+			transport ["certificado"] = self.getTruckValue (type, self.getCheckCertificado (type, keys ["certificado"]))
+			transport ["tipo"]        = self.getTipoVehiculo (type, remolque)
+		except Exception as e:
+			Utils.printException (f"Extrayendo información del vehículo", e)
+
+		return transport
+
+	#-- Get valid value in vehicle/trailer info
+	def getTruckValue (self, type, value):
+		print ("+++ value:", value)
+		if value == "" or value == None or value.upper().startswith ("X") or value.upper () == "N/A":
+			value = "||LOW" if type == "VEHICULO" else None
+		return value
+
+	#-- Get ECUAPASS tipo vehículo for 'empresa'
+	def getTipoVehiculo  (self, tipo, remolque=None):
+		transportNTA     = {"camion": "CAMION", "tractocamion": "SEMIRREMOLQUE"}
+		transportOTHERS  = {"camion": "CAMION", "tractocamion": "TRACTOCAMION"}
+
+		empresa   = self.empresa["id"]
+		transport = transportNTA if empresa == "NTA" else transportOTHERS
+		if tipo == "VEHICULO" and not remolque ["placa"]:
+			return transport ["camion"]
+		elif tipo == "VEHICULO" and remolque ["placa"]:
+			return transport ["tractocamion"] 
+		else:
+			return None
+
+#	#------------------------------------------------------------------
+#	# Vehiculo/Remolque information 
+#	#------------------------------------------------------------------
+#	def getVehiculoInfo (self, remolque):
+#		keys = {"marca":"04_Camion_Marca", "anho":"05_Camion_AnoFabricacion", 
+#		        "placaPais":"06_Camion_PlacaPais", "chasis":"07_Camion_Chasis", 
+#				"certificado":"08_Certificado_Habilitacion"}
+#		vehiculo = {key:None for key in ["marca","anho","pais","placa","chasis","certificado","tipo"]}
+#		try:
+#			vehiculo ["marca"]       = self.getValidValue (Utils.getValue (self.fields, keys ["marca"]))
+#			vehiculo ["anho"]        = self.getValidValue (Utils.getValue (self.fields, keys ["anho"]))
+#			placaPaisText            = self.getValidValue (Utils.getValue (self.fields, keys ["placaPais"]))
+#			if placaPaisText:
+#				placaPais            = Extractor.getPlacaPais (placaPaisText) if placaPaisText else None
+#				vehiculo ["pais"]    = self.getValidValue (placaPais ["pais"])
+#				vehiculo ["placa"]   = self.getValidValue (placaPais ["placa"])
+#			vehiculo ["chasis"]      = self.getValidValue (Utils.getValue (self.fields, keys ["chasis"]))
+#			vehiculo ["certificado"] = self.getCheckCertificadoVehiculo (keys ["certificado"])
+#			vehiculo ["tipo"]        = self.getTipoVehiculo ("VEHICULO", remolque)
+#		except Exception as e:
+#			Utils.printException (f"Extrayendo información del vehículo", e)
+#		return vehiculo
+#
+#	#------------------------------------------------------------------
+#	# Vehiculo/Remolque information 
+#	#------------------------------------------------------------------
+#	def getRemolqueInfo (self):
+#		keys = {"marca":"09_Remolque_Marca", "anho":"10_Remolque_AnoFabricacion",
+#		        "placaPais":"11_Remolque_PlacaPais", "chasis": "12_Remolque_Otro", 
+#				"certificado": "08_Certificado_Habilitacion"}
+#		vehiculo = {key:None for key in ["marca","anho","pais","placa","chasis","certificado","tipo"]}
+#		try:
+#			vehiculo ["marca"]       = self.getValidValue (Utils.getValue (self.fields, keys ["marca"]))
+#			vehiculo ["anho"]        = self.getValidValue (Utils.getValue (self.fields, keys ["anho"]))
+#			placaPaisText            = self.getValidValue (Utils.getValue (self.fields, keys ["placaPais"]))
+#			if placaPaisText:
+#				placaPais            = Extractor.getPlacaPais (placaPaisText) if placaPaisText else None
+#				vehiculo ["pais"]    = self.getValidValue (placaPais ["pais"])
+#				vehiculo ["placa"]   = self.getValidValue (placaPais ["placa"])
+#			vehiculo ["chasis"]      = self.getValidValue (Utils.getValue (self.fields, keys ["chasis"]))
+#			vehiculo ["certificado"] = self.getCheckCertificadoRemolque (keys ["certificado"])
+#			vehiculo ["tipo"]        = self.getTipoVehiculo ("REMOLQUE", vehiculo)
+#		except Exception as e:
+#			Utils.printException (f"Extrayendo información del vehículo", e)
+#		return vehiculo
+
+#	#-- Return certificadoString if it is valid (e.g. CH-CO-XXXX-YY, RUC-CO-XXX-YY), else None
+#	def getCheckCertificadoVehiculo (self, type, key):
+#		if type == "VEHICULO":
+#			return self.getCheckCertificado (key, "VEHICULO")
+#		elif type == "REMOLQUE":
+#			return self.getCheckCertificado (key, "REMOLQUE")
+#		else:
+#			return None
 
 	#-- Return certificadoString if it is valid (e.g. CH-CO-XXXX-YY, RUC-CO-XXX-YY), else None
-	def getCheckCertificadoVehiculo (self, key):
-		return self.getCheckCertificado (key, "VEHICULO")
-
-	def getCheckCertificadoRemolque (self, key):
-		return self.getCheckCertificado (key, "REMOLQUE")
-
-	def getCheckCertificado (self, key, vehicleType):
+	def getCheckCertificado (self, vehicleType, key):
 		try:
 			textCertificado  = Utils.getValue (self.fields, key)
 			if vehicleType == "VEHICULO":
@@ -318,8 +366,8 @@ class ManifiestoInfo (EcuInfo):
 				text    = Extractor.getLastString (textCertificado)
 				pattern = re.compile (r'^(CRU|CR)-(CO|EC)-\d{4,5}-\d{2}')
 
-			if (text == None):
-				return "||LOW"
+			if (text == None): 
+				return "||LOW" if vehicleType == "VEHICULO" else None
 
 			certificadoString = self.formatCertificadoString (text, vehicleType)
 			if bool (pattern.match (certificadoString)) == False:
@@ -380,7 +428,7 @@ class ManifiestoInfo (EcuInfo):
 	def getConductorInfo (self):
 		conductor = Utils.createEmptyDic (["pais", "tipoId", "id", "sexo", "fechaNacimiento", "nombre", "licencia"])
 		try:
-			conductor ["pais"]            = Extractor.getPaisFromSubstring (Utils.getValue (self.fields, "15_Conductor_Nacionalidad"))  
+			conductor ["pais"]            = Extractor.getPaisFromPrefix (Utils.getValue (self.fields, "15_Conductor_Nacionalidad"))  
 			conductor ["tipoId"]          = "CEDULA DE IDENTIDAD"
 			conductor ["id"]              = Utils.getValue (self.fields, "14_Conductor_Id")
 			conductor ["sexo"]            = "Hombre"
@@ -442,42 +490,59 @@ class ManifiestoInfo (EcuInfo):
 	# Aduana info: extract ciudad and pais for "cruce" and "destino" aduanas
 	#--------------------------------------------------------------------
 	def getAduanaInfo (self):
-		info = {"paisCruce":"||LOW", "ciudadCruce":"||LOW", "paisDestino":"||LOW", "ciudadDestino":"||LOW"}
+		info = {"paisCruce":"||NEEDED", "ciudadCruce":"||NEEDED", "paisDestino":"||NEEDED", "ciudadDestino":"||NEEDED"}
 		#info = Utils.createEmptyDic (["paisCruce", "ciudadCruce", "paisDestino", "ciudadDestino"])
 		text = ""
 		try:
-			reWithSeparador = r'(\b\w+[\s\w]*\b)\s*?[-.,]?\s*(\w+)'
-			reWithParentesis = r'(\b\w+[\s\w]*\b)\s*?\s*[(](\w+)[)]'
-
 			aduanas = {}
 			aduanas ["37_Aduana_Cruce"]   = {"ciudad":"ciudadCruce", "pais": "paisCruce"}
 			aduanas ["38_Aduana_Destino"] = {"ciudad":"ciudadDestino", "pais": "paisDestino"}
 
 			for key in ["37_Aduana_Cruce", "38_Aduana_Destino"]:
 				text = Utils.getValue (self.fields, key)
-				results = [re.search (x, text) for x in [reWithSeparador, reWithParentesis]]
-				print ("-- results:", results)
-
-				if results [0] or results [1]:
-					result = results [0] if results [0] else results [1]
-					info [aduanas [key]["ciudad"]] = result.group (1).strip()
-					pais = result.group (2)
-					info [aduanas [key]["pais"]] = Extractor.getPaisFromSubstring (pais).strip()
+				pais, ciudad = Extractor.getPaisCiudad (text, self.resourcesPath)
+				print ("+++DEBUG: ciudad, pais:", ciudad, pais)
+				info [aduanas [key]["ciudad"]] = ciudad if Utils.isValidText (ciudad) else "||NEEDED"
+				info [aduanas [key]["pais"]]   = pais if Utils.isValidText (pais) else "||NEEDED"
 
 		except Exception as e:
 			Utils.printException (f"Extrayendo pais-ciudad desde aduanas en texto: '{text}'", e)
 		return info
 
+
+#	def getAduanaInfoWithREs (self):
+#		info = {"paisCruce":"||NEEDED", "ciudadCruce":"||NEEDED", "paisDestino":"||NEEDED", "ciudadDestino":"||NEEDED"}
+#		#info = Utils.createEmptyDic (["paisCruce", "ciudadCruce", "paisDestino", "ciudadDestino"])
+#		text = ""
+#		try:
+#			#reWithSeparador = r'(\b\w+[\s\w]*\b)\s*?[-.,]?\s*(\w+)'
+#			reWithSeparador = r"(?P<city>[A-Za-z\s]+)\s*[-,\.]\s*(?P<country>[A-Za-z\s]+)"
+#			reWithParentesis = r'(\b\w+[\s\w]*\b)\s*?\s*[(](\w+)[)]'
+#
+#			aduanas = {}
+#			aduanas ["37_Aduana_Cruce"]   = {"ciudad":"ciudadCruce", "pais": "paisCruce"}
+#			aduanas ["38_Aduana_Destino"] = {"ciudad":"ciudadDestino", "pais": "paisDestino"}
+#
+#			for key in ["37_Aduana_Cruce", "38_Aduana_Destino"]:
+#				text = Utils.getValue (self.fields, key)
+#				results = [re.search (x, text) for x in [reWithSeparador, reWithParentesis]]
+#				print ("+++ Aduana resultados:", results)
+#
+#				if results [0] or results [1]:
+#					result = results [0] if results [0] else results [1]
+#					ciudad = result.group (1).strip()
+#					info [aduanas [key]["ciudad"]] = ciudad if Utils.isValidText (ciudad) else "||NEEDED"
+#					pais = Extractor.getPaisFromPrefix (result.group (2)).strip()
+#					info [aduanas [key]["pais"]]   = pais if Utils.isValidText (pais) else "||NEEDED"
+#
+#		except Exception as e:
+#			Utils.printException (f"Extrayendo pais-ciudad desde aduanas en texto: '{text}'", e)
+#		return info
 	#------------------------------------------------------------------
 	# Secuencia, MRN, MSN, NumeroCPIC for BOTERO-SOTO
 	#------------------------------------------------------------------
 	def getSecuencia (self):
 		return "1"
-
-	def getMRN (self):
-		text = Utils.getValue (self.fields, "29_Mercancia_Descripcion")
-		MRN  = Extractor.getMRN (text)
-		return MRN
 
 	def getMSN (self):
 		return "0001" + "||LOW"
@@ -491,36 +556,44 @@ class ManifiestoInfo (EcuInfo):
 	#-----------------------------------------------------------
 	#-- Get bultos info: cantidad, embalaje, marcas
 	#-----------------------------------------------------------
-	def getBultosInfo (self):
-		bultos = Utils.createEmptyDic (["cartaporte", "cantidad", "embalaje", "marcas", "descripcion"])
-		text = None
-		try:
-			bultos ["cartaporte"] = self.getNumeroCartaporte ()
+	def getBultosInfoManifiesto (self):
+		ecuapassFields = {"cantidad": "30_Mercancia_Bultos", "marcas":
+			   "31_Mercancia_Embalaje", "descripcion": "29_Mercancia_Descripcion"}
 
-			# Cantidad
-			text             = self.fields ["30_Mercancia_Bultos"]["value"]
-			bultos ["cantidad"] = Extractor.getNumber (text)
-			bultos ["embalaje"] = Extractor.getTipoEmbalaje (text, self.resourcesPath)
+		bultosInfo = self.getBultosInfo (ecuapassFields)
+		bultosInfo ["cartaporte"] = self.getNumeroCartaporte ()
+		return bultosInfo
 
-			# Marcas 
-			text = self.fields ["31_Mercancia_Embalaje"]["value"]
-			bultos ["marcas"] = "SIN MARCAS" if text == None else text
+	#-----------------------------------------------------------
+	# Get pais descarga
+	#-----------------------------------------------------------
+	def getPaisDescarga (self):
+		return self.ecudoc ["49_Pais_Descarga"]
 
-			# Descripcion
-			descripcion = self.fields ["29_Mercancia_Descripcion"]["content"]
-			descripcion = self.cleanWaterMark (descripcion)
-			bultos ["descripcion"] = self.getMercanciaDescripcion (descripcion)
-		except:
-			Utils.printException ("Obteniendo información de 'Bultos'", text)
 
-		return bultos
-
-#--------------------------------------------------------------------
-# Call main 
-#--------------------------------------------------------------------
-if __name__ == '__main__':
-	main ()
-
+#	def getBultosInfo (self):
+#		bultos = Utils.createEmptyDic (["cartaporte", "cantidad", "embalaje", "marcas", "descripcion"])
+#		text = None
+#		try:
+#			bultos ["cartaporte"] = self.getNumeroCartaporte ()
+#
+#			# Cantidad
+#			text                = self.fields ["30_Mercancia_Bultos"]["value"]
+#			bultos ["cantidad"] = Extractor.getNumber (text)
+#			bultos ["embalaje"] = Extractor.getTipoEmbalaje (text)
+#
+#			# Marcas 
+#			text = self.fields ["31_Mercancia_Embalaje"]["value"]
+#			bultos ["marcas"] = "SIN MARCAS" if text == None else text
+#
+#			# Descripcion
+#			descripcion = self.fields ["29_Mercancia_Descripcion"]["content"]
+#			descripcion = self.cleanWaterMark (descripcion)
+#			bultos ["descripcion"] = self.getMercanciaDescripcion (descripcion)
+#		except:
+#			Utils.printException ("Obteniendo información de 'Bultos'", text)
+#
+#		return bultos
 
 #--------------------------------------------------------------------
 # Call main 

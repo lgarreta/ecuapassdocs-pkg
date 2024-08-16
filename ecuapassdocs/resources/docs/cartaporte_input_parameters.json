@@ -1,4 +1,5 @@
 {
+
     "id": {
         "align": "left",
         "class": "input_numero",
@@ -39,6 +40,7 @@
         "x": 300,
         "y": 88
 	},
+
     "txt0a": {
         "align": "left",
         "class": "input_numero",

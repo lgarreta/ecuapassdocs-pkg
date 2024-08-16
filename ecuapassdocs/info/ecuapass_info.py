@@ -1,8 +1,7 @@
 
 import os, json, re
 
-from ecuapassdocs.info.resourceloader import ResourceLoader 
-
+from .resourceloader import ResourceLoader 
 from .ecuapass_data import EcuData
 from .ecuapass_extractor import Extractor
 from .ecuapass_utils import Utils
@@ -11,6 +10,9 @@ from .ecuapass_utils import Utils
 class EcuInfo:
 
 	def __init__ (self, docType, fieldsJsonFile, runningDir):
+		self.pais           = None       # Assigned after read the doc number
+		self.numero         = None       # Assigned after read the doc number
+
 		self.docType        = docType
 		self.inputsParametersFile = Utils.getInputsParametersFile (docType)
 
@@ -25,106 +27,153 @@ class EcuInfo:
 		#self.fields ["jsonFile"]  = fieldsJsonFile
 		self.ecudoc         = {}
 
+	#------------------------------------------------------------------
+	# Update fields that depends of other fields
+	#------------------------------------------------------------------
+	def updateFieldsFromFields (self):
+		self.numero = self.getNumeroDocumento ()
+		self.pais   = Utils.getPaisFromDocNumber (self.numero)
+		self.updateDistritoFromFields ()
+
+	#-- Update distrito after knowing paisDestinatario
+	def updateDistritoFromFields (self):
+		distrito      = "TULCAN||LOW"
+		ecuapassField = None
+		paisDestino   = None
+		try:
+			# Get ecuapassField and paisDestino
+			if self.docType == "CARTAPORTE": 
+				ecuapassField, paisDestino = "01_Distrito", self.getPaisDestinatario ()
+			elif self.docType == "MANIFIESTO":
+				ecuapassField, paisDestino = "04_Distrito", self.getPaisDescarga ()
+			elif self.docType == "DECLARACION":
+				ecuapassField, paisDestino = "01_Distrito", self.getPaisDestinatario ()
+
+			# Set distrito
+			if self.pais == "PERU":
+				self.ecudoc [ecuapassField] = "HUAQUILLAS"
+			elif self.pais == "COLOMBIA":
+				self.ecudoc [ecuapassField] = "TULCAN"
+			elif "PERU" in paisDestino:
+				self.ecudoc [ecuapassField] = "HUAQUILLAS"
+			else:
+				self.ecudoc [ecuapassField] = "TULCAN"
+		except Exception as ex:
+			Utils.printx ("EXCEPCION actualizando distrito: '{ex}'")
+	
 	#-- Implemented in subclasses
 	def getEmpresaInfo (self):
 		return None
 
 	#-- Updated Ecuapass document fields with values ready to transmit
-	#-- Change names to codes for additional presition
+	#-- Change names to codes for additional presition. Remove '||LOW'
 	def updateEcuapassFile (self, ecuJsonFile):
+		ecuapassFields    = json.load (open (ecuJsonFile))
+		ecuapassFieldsUpd = self.updateEcuapassFields (ecuapassFields)
+		ecuJsonFileUpd    = Utils.saveFields (ecuapassFieldsUpd, ecuJsonFile, "UPDATE")
+		return ecuapassFieldsUpd
+
+	def updateEcuapassFields (self, ecuapassFields):
 		print ("-- Updating Ecuapass fields...")
-		ecudoc = json.load (open (ecuJsonFile))
-		for key in ecudoc:
-			if ecudoc [key] is None:
+		for key in ecuapassFields:
+			if ecuapassFields [key] is None:
 				continue
 
 			# Vehiculo
 			if "Tipo_Vehiculo" in key:
 				vehiculos    = {"SEMIRREMOLQUE":"SR", "TRACTOCAMION":"TC", "CAMION":"CA"}
-				ecudoc [key] = vehiculos [ecudoc[key]]
-
-			# Embalaje
-			if "Embalaje" in key: 
-				embalaje = ecudoc [key].upper()
-				if "PALLETS" in embalaje:
-					embalaje = "152" # "[152] PALETAS"
-				elif "SACO" in embalaje:
-					embalaje = "104" # "[104] SACO"
-				elif "CAJA" in embalaje:
-					embalaje = "035" # "[035] CAJA"
-				ecudoc [key] = embalaje
+				ecuapassFields [key] = vehiculos [ecuapassFields[key]]
 
 			# Moneda
 			if "Moneda" in key:
-				ecudoc [key] = "USD"
+				ecuapassFields [key] = "USD"
+
+			# Embalaje
+			if "Embalaje" in key: 
+				embalaje = ecuapassFields [key].upper()
+				ecuapassFields [key] = Extractor.getCodeEmbalaje (embalaje)
 
 			# Remove confidence string ("||LOW")
-			value        = ecudoc [key] 
+			value        = ecuapassFields [key] 
 			value        = value.split ("||")[0] if value else None
-			ecudoc [key] = value if value != "" else None
+			ecuapassFields [key] = value if value != "" else None
 
-		ecuJsonFileUpd = Utils.saveFields (ecudoc, ecuJsonFile, "UPDATE")
-		return ecudoc
+		return ecuapassFields
 
 
-	#-- For all types of documents (fixed fro NTA and BYZA, check the others)
+	#-- For all types of documents (fixed for NTA and BYZA, check the others)
 	def getNumeroDocumento (self):
-		text   = Utils.getValue (self.fields, "00b_Numero")
-		numero = Extractor.getNumeroDocumento (text)
+		text        = Utils.getValue (self.fields, "00b_Numero")
+		numero      = Extractor.getNumeroDocumento (text)
 
-		codigo = self.getCodigoPais (numero)
+		codigo = Utils.getCodigoPais (numero)
 		self.fields ["00_Pais"] = {"value":codigo, "content":codigo}
 		return numero
-
-	#-- Returns the first two letters from document number
-	def getCodigoPais (self, numero):
-		try:
-			if numero.startswith ("CO"): 
-				return "CO"
-			elif numero.startswith ("EC"): 
-				return "EC"
-		except:
-			print (f"ALERTA: No se pudo determinar código del pais desde el número: '{numero}'")
-		return ""
 
 	#-- Return updated PDF document fields
 	def getDocFields (self):
 		return self.fields
 
-	#-- Get id (short name)
+	#-- Get id (short name: NTA, BYZA, LOGITRANS)
 	def getIdEmpresa (self):
 		return self.empresa ["id"]
 
-	#-- Get data and value from document main fields"""
-	def getNombreEmpresa (self):
+	def getIdNumeroEmpresa (self):
+		id = self.empresa ["idNumero"]
+		return id
+
+	#-- Get full name (e.g. N.T.A Nuevo Transporte ....)
+	def getNombreEmpresa (self): 
 		return self.empresa ["nombre"]
 
+	#-- For NTA there are two directions: Tulcan and Huaquillas
 	def getDireccionEmpresa (self):
-		return self.empresa ["direccion"]
+		try:
+			numero            = self.getNumeroDocumento ()
+			codigoPais        = Utils.getCodigoPais (numero)
+			idEmpresa         = self.getIdEmpresa ()
+
+			if idEmpresa == "NTA" and codigoPais == "PE":
+				return self.empresa ["direccion02"]
+			else:
+				return self.empresa ["direccion"]
+		except:
+			Utils.printException ("No se pudo determinar dirección empresa")
+			return None
 
 	#-----------------------------------------------------------
 	#-- Return IMPORTACION or EXPORTACION
 	#-----------------------------------------------------------
 	def getTipoProcedimiento (self):
 		tipoProcedimiento = None
-		#procedimientosNTA   = {"CO":"EXPORTACION", "EC":"IMPORTACION"}
-		procedimientosBYZA  = {"CO":"IMPORTACION", "EC":"EXPORTACION"}
-		procedimientosNTA   = procedimientosBYZA
-
 		try:
-			if self.empresa ["id"] == "NTA":
-				procedimientos = procedimientosNTA
-			elif self.empresa ["id"] == "BYZA":
-				procedimientos = procedimientosBYZA
-
+			procedimientos    = {"CO":"IMPORTACION", "EC":"EXPORTACION", "PE":"IMPORTACION"}
 			numero            = self.getNumeroDocumento ()
-			codigoPais        = self.getCodigoPais (numero)
+			codigoPais        = Utils.getCodigoPais (numero)
 			tipoProcedimiento = procedimientos [codigoPais]
 		except:
 			Utils.printException ("No se pudo determinar tipo de procedimiento (Importación/Exportación)")
 			tipoProcedimiento = "IMPORTACION||LOW"
 
 		return tipoProcedimiento
+
+	#-----------------------------------------------------------
+	# Get distrito according to 'empresa'
+	#-----------------------------------------------------------
+	def getDistrito (self):
+		distrito = None
+		try:
+			numero            = self.getNumeroDocumento ()
+			codigoPais        = Utils.getCodigoPais (numero)
+			idEmpresa         = self.getIdEmpresa ()
+			if idEmpresa == "NTA" and codigoPais == "PE":
+				distrito = "HUAQUILLAS"
+			else: # For NTA, BYZA, LOGITRANS
+				distrito = "TULCAN" + "||LOW"
+
+			return distrito
+		except:
+			Utils.printException ("No se pudo determinar el distrito (Importación/Exportación)")
 
 	#-----------------------------------------------------------
 	# Get info from mercancia: INCONTERM, Ciudad, Precio, Tipo Moneda
@@ -243,15 +292,15 @@ class EcuInfo:
 			return None
 
 	#-----------------------------------------------------------
-	# Implemented for each class: get the document field value
+	# Get value for document field in azure format (id:{content:XX,value:XX})
 	#-----------------------------------------------------------
 	def getDocumentFieldValue (self, docField, appName=None):
 		value = None
-		# For ecudocs is "CO" for codebin is "colombia"
+		# For ecudocs is "CO" but for codebin is "colombia"
 		if "00_Pais" in docField:
-			paises     = {"CO":"CO", "EC":"EC"}
+			paises     = {"CO":"CO", "EC":"EC", "PE":"PE"}
 			if appName == "CODEBIN":
-				paises     = {"CO":"colombia", "EC":"ecuador"}
+				paises     = {"CO":"colombia", "EC":"ecuador", "PE":"peru"}
 
 			codigoPais = self.fields [docField]["value"]
 			value      =  paises [codigoPais]
@@ -266,3 +315,60 @@ class EcuInfo:
 
 		return value
 
+	#------------------------------------------------------------------
+	#-- get MRN according to empresa and docField
+	#------------------------------------------------------------------
+	def getMRN (self):
+		text = None
+		if self.empresa ["id"] == "NTA" and self.docType == "CARTAPORTE":
+			text = Utils.getValue (self.fields, "22_Observaciones")
+
+		elif self.empresa ["id"] == "NTA" and self.docType == "MANIFIESTO":
+			text = Utils.getValue (self.fields, "29_Mercancia_Descripcion")
+
+		elif self.empresa ["id"] == "BYZA" and self.docType == "CARTAPORTE":
+			text = Utils.getValue (self.fields, "12_Descripcion_Bultos")
+
+		elif self.empresa ["id"] == "BYZA" and self.docType == "MANIFIESTO":
+			text = Utils.getValue (self.fields, "29_Mercancia_Descripcion")
+
+		elif self.empresa ["id"] == "LOGITRANS" and self.docType == "CARTAPORTE":
+			text = Utils.getValue (self.fields, "21_Instrucciones")
+			if not "MRN" in text:
+				text = Utils.getValue (self.fields, "22_Observaciones")
+
+		elif self.empresa ["id"] == "LOGITRANS" and self.docType == "MANIFIESTO":
+			text = Utils.getValue (self.fields, "29_Mercancia_Descripcion")
+
+		MRN    = Extractor.getMRNFromText (text)
+		return Utils.checkLow (MRN)
+
+
+	#------------------------------------------------------------------
+	# Get bultos info for CPI and MCI with differnte ecuapass fields
+	#------------------------------------------------------------------
+	def getBultosInfo (self, ecuapassFields):
+		bultosInfo = Utils.createEmptyDic (["cantidad", "embalaje", "marcas", "descripcion"])
+		cantidadField    = ecuapassFields ["cantidad"]
+		marcasField      = ecuapassFields ["marcas"]
+		descripcionField = ecuapassFields ["descripcion"]
+		try:
+			# Cantidad
+			text             = self.fields [cantidadField]["value"]
+			bultosInfo ["cantidad"] = Extractor.getNumber (text)
+			bultosInfo ["embalaje"] = Extractor.getTipoEmbalaje (text)
+
+			# Marcas 
+			text = self.fields [marcasField]["value"]
+			bultosInfo ["marcas"] = "SIN MARCAS" if text == None else text
+
+			# Descripcion
+			descripcion = self.fields [descripcionField]["content"]
+			descripcion = self.cleanWaterMark (descripcion)
+			bultosInfo ["descripcion"] = self.getMercanciaDescripcion (descripcion)
+		except:
+			Utils.printException ("Obteniendo información de 'Bultos'", text)
+		return bultosInfo
+
+
+		

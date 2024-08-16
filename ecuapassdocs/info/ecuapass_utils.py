@@ -1,9 +1,9 @@
-import os, json, re, sys
+import os, json, re, sys, tempfile
 
 from traceback import format_exc as traceback_format_exc
 import traceback
 
-from ecuapassdocs.info.resourceloader import ResourceLoader 
+from .resourceloader import ResourceLoader 
 
 #--------------------------------------------------------------------
 # Utility function used in EcuBot class
@@ -12,7 +12,23 @@ class Utils:
 	runningDir = None
 	message = ""   # Message sent by 'checkError' function
 
+	#------------------------------------------------------
+	#-- Redirect stdout output to file
+	#------------------------------------------------------
+	def redirectOutput (logFilename, logFile=None, stdoutOrg=None):
+		if logFile == None and stdoutOrg == None:
+			logFile    = open (logFilename, "w")
+			stdoutOrg  = sys.stdout
+			sys.stdout = logFile
+		else:
+			logFile.close ()
+			sys.stdout = stdoutOrg
+
+		return logFile, stdoutOrg
+
+	#------------------------------------------------------
   	#-- Remove text added with confidence value ("wwww||dd")
+	#------------------------------------------------------
 	def removeConfidenceString (fieldsConfidence):
 		fields = {}
 		for k in fieldsConfidence:
@@ -55,6 +71,8 @@ class Utils:
 
 	def printx (*args, flush=True, end="\n"):
 		print ("SERVER:", *args, flush=flush, end=end)
+		message = "SERVER: " + " ".join ([str(x) for x in args])
+		return message
 
 	def printException (message=None, text=None):
 		if message:
@@ -69,6 +87,8 @@ class Utils:
 			return fields [key]["content"]
 		except:
 			Utils.printException ("EXEPCION: Obteniendo valor para la llave:", key)
+			#traceback.print_exception ()
+
 			return None
 
 	#-----------------------------------------------------------
@@ -218,9 +238,10 @@ class Utils:
 		# Load parameters from package
 		inputParameters = ResourceLoader.loadJson ("docs", inputsParametersFile)
 		for key, item in inputParameters.items():
-			ecudocsField	 = item ["ecudocsField"]
-			value = item ["value"]
-			azureValues [ecudocsField] = {"value": value, "content": value}
+			ecudocsField = item ["ecudocsField"]
+			if ecudocsField:
+				value                      = inputValues [key]
+				azureValues [ecudocsField] = {"value": value, "content": value}
 
 		return azureValues
 
@@ -241,20 +262,34 @@ class Utils:
 	# Load values and filter inputs not used in DB models
 	# Format: key : value
 	#-------------------------------------------------------------------
-	def getInputsValuesFromParamsFile (paramsFile):
+	def getInputValuesFromParamsFile (paramsFile):
 		# Document class (ej. CartaporteDoc, ManifiestoDoc)
-		paramsValues = json.load (open (paramsFile))
+		inputsParams = json.load (open (paramsFile))
+		inputsValues = Utils.getInputsValuesFromInputsParams (inputsParams)
+		return inputsParams
 
-		paramsValues.pop ("id")
-		paramsValues.pop ("fecha_creacion")
-		paramsValues.pop ("referencia")
+	def getInputValuesFromInputParams (inputsParams):
+		# Document class (ej. CartaporteDoc, ManifiestoDoc)
+		#inputsParams.pop ("id")
+		#inputsParams.pop ("fecha_creacion")
+		#inputsParams.pop ("referencia")
 
-		inputsFields = {}
-		for key in paramsValues:
-			inputsFields [key] = paramsValues [key]["value"]
+		inputsValues = {}
+		for key in inputsParams:
+			inputsValues [key] = inputsParams [key]["value"]
 
-		return inputsFields
+		return inputsValues
 
+	def setInputValuesToInputParams (inputValues, inputParams):
+		for key in inputValues:
+			try:
+				inputParams [key]["value"] = inputValues [key]
+			except KeyError as ex:
+				print (f"Llave '{key}' no encontrada")
+
+
+		return inputParams
+		
 	#-------------------------------------------------------------------
 	# Get the number (ej. CO00902, EC03455) from the filename
 	#-------------------------------------------------------------------
@@ -270,6 +305,8 @@ class Utils:
 			return "CARTAPORTE"
 		elif "MCI" in filename:
 			return "MANIFIESTO"
+		elif "DTI" in filename or "DCL" in filename:
+			return "DECLARACION"
 		else:
 			raise Exception (f"Tipo de documento desconocido para: '{filename}'")
 
@@ -277,18 +314,34 @@ class Utils:
 	# Get 'pais, codigo' from document number or text
 	#-------------------------------------------------------------------
 	def getPaisCodigoFromDocNumber (docNumber):
-		pais, codigo = "NONE", "NO" 
+		paisCodes = {"COLOMBIA":"CO", "ECUADOR":"EC", "PERU": "PE"}
+		pais      = Utils.getPaisFromDocNumber (docNumber)
+		codigo    = paisCodes [pais]
+		return pais.lower(), codigo
+
+	def getPaisFromDocNumber (docNumber):
+		try:
+			codePaises = {"CO": "COLOMBIA", "EC": "ECUADOR", "PE": "PERU"}
+			code   = Utils.getCodigoPais (docNumber)
+			print ("+++ DEBUG: getCodigoPais: docNumber:", docNumber)
+			pais   = codePaises [code]
+			return pais
+		except:
+			print (f"ALERTA: No se pudo determinar código del pais desde el número: '{docNumber}'")
+
+	#-- Returns the first two letters from document number
+	def getCodigoPais (docNumber):
 		docNumber = docNumber.upper ()
-
-		if docNumber.startswith ("CO"):
-			pais, codigo = "colombia", "CO"
-		elif docNumber.startswith ("EC"):
-			pais, codigo = "ecuador", "EC"
-		else:
-			raise Exception (f"No se encontró país en número: '{docNumber}'")
-
-		return pais, codigo
-
+		try:
+			if docNumber.startswith ("CO"): 
+				return "CO"
+			elif docNumber.startswith ("EC"): 
+				return "EC"
+			elif docNumber.startswith ("PE"): 
+				return "PE"
+		except:
+			print (f"ALERTA: No se pudo determinar código del pais desde el número: '{docNumber}'")
+		return ""
 	#-------------------------------------------------------------------
 	# Get 'pais, codigo' from text
 	#-------------------------------------------------------------------
@@ -300,10 +353,40 @@ class Utils:
 			pais, codigo = "colombia", "CO"
 		elif "ECUADOR" in text:
 			pais, codigo = "ecuador", "EC"
+		elif "PERU" in text:
+			pais, codigo = "peru", "PE"
 		else:
 			raise Exception (f"No se encontró país en texto: '{text}'")
 
 		return pais, codigo
+
+	#----------------------------------------------------------------
+	# Not working for Peru
+	# Used in EcuapassDocs web
+	#----------------------------------------------------------------
+	def getCodigoPaisFromProcedimiento (empresa, procedimiento):
+		procedimientosBYZA = {"importacion":"CO", "exportacion":"EC"}
+		procedimiento = procedimiento.lower()
+		if empresa == "BYZA" and "importacion" in procedimiento :
+			return procedimientosBYZA ["importacion"]
+		elif empresa == "BYZA" and "exportacion" in procedimiento :
+			return procedimientosBYZA ["exportacion"]
+		else:
+			raise Exception (f"No se identificó código pais desde procedimiento '{procedimiento}'")
+
+	#-------------------------------------------------------------------
+	# Return 'EXPORTACION' or 'IMPORTACION' according to 'pais' and 'empresa'
+	# Used in EcuapassDocs web
+	#-------------------------------------------------------------------
+	def getProcedimientoFromPais (empresa, pais):
+		procedimientosBYZA = {"CO":"IMPORTACION", "EC":"EXPORTACION", "PE":"EXPORTACION"}
+		pais = pais.upper ()
+		if empresa == "BYZA" and pais.startswith ("CO"):
+			return "IMPORTACION"
+		elif empresa == "BYZA" and pais.startswith ("EC"):
+			return "EXPORTACION"
+		else:
+			raise Exception (f"No se pudo identificar procedimiento desde '{empresa}':'{pais}'")
 
 	#----------------------------------------------------------------
 	#-- Return input parameters file
@@ -335,3 +418,30 @@ class Utils:
 		Utils.printx ("Empresa actual: ", empresa)
 		return settings
 
+	#-----------------------------------------------------------
+	# Extract field info from azure fields using info clases (e.g.
+	# CartaporteBiza
+	#-----------------------------------------------------------
+	def getEcuapassFieldInfo (INFOCLASS, fieldName, docFields):
+		jsonFieldsPath, runningDir = Utils.createTemporalJson (docFields)
+		docInfo           = INFOCLASS (jsonFieldsPath, runningDir)
+		ecuapassFields    = docInfo.getEcuapassFields ()
+		ecuapassFieldsUpd = docInfo.updateEcuapassFields (ecuapassFields)
+		fieldInfo         = ecuapassFieldsUpd [fieldName]
+		return fieldInfo
+
+	def createTemporalJson (docFields):
+		numero   = docFields ["00b_Numero"]
+		tmpPath        = tempfile.gettempdir ()
+		jsonFieldsPath = os.path.join (tmpPath, f"ECUDOC-{numero}.json")
+		json.dump (docFields, open (jsonFieldsPath, "w"))
+		return (jsonFieldsPath, tmpPath)
+
+	#-----------------------------------------------------------
+	# Check if text contains word or it is not None or empty
+	#-----------------------------------------------------------
+	def isValidText (text):
+		if text != None or text.strip () != "":
+			return True
+		else:
+			return False
