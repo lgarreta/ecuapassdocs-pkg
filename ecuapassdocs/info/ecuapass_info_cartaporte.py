@@ -20,7 +20,7 @@ def main ():
 	args = sys.argv
 	fieldsJsonFile = args [1]
 	runningDir = os.getcwd ()
-	mainFields = CartaporteInfo.getEcuapassFields (fieldsJsonFile, runningDir)
+	mainFields = CartaporteInfo.extractEcuapassFields (fieldsJsonFile, runningDir)
 	Utils.saveFields (mainFields, fieldsJsonFile, "Results")
 
 #----------------------------------------------------------
@@ -32,7 +32,7 @@ class CartaporteInfo (EcuInfo):
 		super().__init__ ("CARTAPORTE", fieldsJsonFile, runningDir)
 
 	#-- Get data and value from document main fields"""
-	def getEcuapassFields (self):
+	def extractEcuapassFields (self):
 		logFile, stdoutOrg= Utils.redirectOutput ("log-extraction-cartaporte.log")
 		try:
 			#--------------------------------------------------------------
@@ -100,7 +100,7 @@ class CartaporteInfo (EcuInfo):
 			self.ecudoc ["34_FechaEmbarque"]   = embarque ["fecha"] 
 
 			#-- Entrega location box
-			entrega	                          = self.getEntregaLocation ("08_Entrega")
+			entrega	                          = self.getLocationInfo ("08_Entrega")
 			self.ecudoc ["35_PaisEntrega"]    = entrega ["pais"] 
 			self.ecudoc ["36_CiudadEntrega"]  = entrega ["ciudad"] 
 			self.ecudoc ["37_FechaEntrega"]   = entrega ["fecha"] 
@@ -177,7 +177,7 @@ class CartaporteInfo (EcuInfo):
 			self.ecudoc ["79_DescripcionCarga"] = bultosInfo ["descripcion"]
 
 			# Update fields depending of other fields (or depending of # "empresa")
-			self.updateFieldsFromFields ()
+			self.updateExtractedEcuapassFields ()
 
 		except:
 			Utils.printx (f"ALERTA: Problemas extrayendo información del documento '{self.fieldsJsonFile}'")
@@ -190,7 +190,7 @@ class CartaporteInfo (EcuInfo):
 #	#------------------------------------------------------------------
 #	# Update fields that depends of other fields
 #	#------------------------------------------------------------------
-#	def updateFieldsFromFields (self):
+#	def updateExtractedEcuapassFields (self):
 #		self.numero = self.getNumeroDocumento ()
 #		self.pais   = Utils.getPaisFromDocNumber (self.numero)
 
@@ -234,31 +234,32 @@ class CartaporteInfo (EcuInfo):
 		location = Extractor.extractLocationDate (text, self.resourcesPath, key)
 		return (location)
 
-	#-----------------------------------------------------------
-	# Get "Entrega" location and suggest a date if it is None
-	#-----------------------------------------------------------
-	def getEntregaLocation (self, key):
-		idEmpresa = self.getIdEmpresa ()
-		location = self.getLocationInfo (key)
+	#-- Called when update extracted fields
+	#-- Add one or tww weeks to 'entrega' from 'embarque' date
+	def getFechaEntrega (self, fechaEntrega=None):
 		try:
-			# Add a week to 'entrega' from 'embarque' date
-			if location ["fecha"] == "||LOW" or location ["fecha"] is None:
-				fechaEmbarque      = self.ecudoc ["34_FechaEmbarque"]
-				date_obj           = datetime.strptime (fechaEmbarque, "%d-%m-%Y")
-				new_date_obj       = date_obj  # Fecha igual a la de Embarque
+			if fechaEntrega == "||LOW" or fechaEntrega is None:
+				fechaEmbarque = self.ecudoc ["34_FechaEmbarque"]
+				fechaEmbarque = datetime.strptime (fechaEmbarque, "%d-%m-%Y") # Fecha igual a la de Embarque
 
-				if "NTA" in idEmpresa:
-					new_date_obj       = datetime.today()
-				elif "BYZA" in idEmpresa:
-					new_date_obj       = date_obj + timedelta(weeks=2)   # 15 días
-				elif "LOGITRANS" in idEmpresa:
-					new_date_obj       = date_obj + timedelta(weeks=1)   # 07 días
+				fechasEntregaEmpresa = {
+					"NTA":       datetime.today (),
+					"BYZA":      fechaEmbarque + timedelta (weeks=2),
+					"LOGITRANS": fechaEmbarque + timedelta (weeks=1)
+				}
 
-				location ["fecha"] = new_date_obj.strftime("%d-%m-%Y") + "||LOW"
+				if self.getTipoProcedimiento () == "TRANSITO":
+					fechasEntregaEmpresa ["LOGITRANS"] = fechaEmbarque + timedelta (weeks=2)
+
+				idEmpresa    = self.getIdEmpresa ()
+				fechaEntrega = fechasEntregaEmpresa [idEmpresa].strftime ("%d-%m-%Y") + "||LOW"
+				return fechaEntrega
 		except:
-			Utils.printException ("Obteniendo información de 'entrega'")
+			Utils.printException ("Obteniendo información de Fecha de entrega")
 
-		return location
+		return fechaEntrega
+
+
 	#-----------------------------------------------------------
 	# Get "transporte" and "pago" conditions
 	#-----------------------------------------------------------
@@ -453,6 +454,20 @@ class CartaporteInfo (EcuInfo):
 	#-------------------------------------------------------------------
 	def getPaisDestinatario (self):
 		return self.ecudoc ["16_PaisDestinatario"]
+
+	#-----------------------------------------------------------
+	#-----------------------------------------------------------
+	# Basic functions
+	#-----------------------------------------------------------
+	#-----------------------------------------------------------
+	def getPaisDestinoDocumento (self):
+		try:
+			paisDestino = self.getPaisDestinatario ()
+			if not paisDestino:
+				paisDestino = self.ecudoc ["35_PaisEntrega"] 
+			return paisDestino
+		except:
+			return None
 
 #--------------------------------------------------------------------
 # Call main 

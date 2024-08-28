@@ -4,6 +4,7 @@ from traceback import format_exc as traceback_format_exc
 
 from .ecuapass_utils import Utils
 from .resourceloader import ResourceLoader 
+
 #--------------------------------------------------------------------
 # Class for extracting different values from document texts
 #--------------------------------------------------------------------
@@ -87,26 +88,26 @@ class Extractor:
 	#------------------------------------------------------------------
 	#-- Get ciudad + pais using data from ecuapass
 	#------------------------------------------------------------------
-	def extractCiudadPais (text, resourcesPath):
-		info = {"ciudad":None, "pais":None}
-		try:
-			rePais = ".*?(ECUADOR|COLOMBIA|PERU)"
-			pais   = Extractor.getValueRE (rePais, text, re.I)
-			info ["pais"] = pais 
-				
-			if (pais):
-				cities = Extractor.getSubjectCitiesString (pais, resourcesPath)
-				reLocation = f"(?P<ciudad>{cities}).*(?P<pais>{pais})[.\s]*"
-				result = re.search (reLocation, text, flags=re.I)
-				info ["ciudad"] = result.group ("ciudad") if result != None else None
-			else:
-				reCiudad = r"\b(\w+(?:\s+\w+)*)\b"
-				info ["ciudad"] = Extractor.getValueRE (reCiudad, text, re.I)
-
-		except:
-			Utils.printException (f"Obteniendo ciudad-pais de '{text}'", text)
-
-		return (info)
+#	def extractCiudadPais (text, resourcesPath):
+#		info = {"ciudad":None, "pais":None}
+#		try:
+#			rePais = ".*?(ECUADOR|COLOMBIA|PERU)"
+#			pais   = Extractor.getValueRE (rePais, text, re.I)
+#			info ["pais"] = pais 
+#				
+#			if (pais):
+#				cities = Extractor.getSubjectCitiesString (pais, resourcesPath)
+#				reLocation = f"(?P<ciudad>{cities}).*(?P<pais>{pais})[.\s]*"
+#				result = re.search (reLocation, text, flags=re.I)
+#				info ["ciudad"] = result.group ("ciudad") if result != None else None
+#			else:
+#				reCiudad = r"\b(\w+(?:\s+\w+)*)\b"
+#				info ["ciudad"] = Extractor.getValueRE (reCiudad, text, re.I)
+#
+#		except:
+#			Utils.printException (f"Obteniendo ciudad-pais de '{text}'", text)
+#
+#		return (info)
 
 	
 	#-- Get ciudad + pais using data from ecuapass ------------------
@@ -178,7 +179,7 @@ class Extractor:
 		if text != None:
 			if function == "search":
 				result = re.search (RE, text, flags=flags)
-				return result.group(1) if result else None
+				return result.group (1) if result else None
 			elif function == "findall":
 				resultList = re.findall (RE, text, flags=flags)
 				return resultList [-1] if resultList else None
@@ -296,43 +297,36 @@ class Extractor:
 		try:
 			rePaises = Extractor.getDataString ("paises.txt", resourcesPath)
 			pais     = Extractor.getValueRE (f"({rePaises})", text, re.I)
+
+			if not pais: # try "(CO), "(EC)" and "(PE)"
+				rePais   = r'.*\((CO|EC|PE)\)'
+				paisCode = Extractor.getValueRE (rePais, text, re.I)
+				pais     = Utils.getPaisFromCodigoPais (paisCode)
 		except:
 			Utils.printException (f"Obteniendo pais desde texto '{text}'")
 		return pais
 
 	#-- Get ciudad given pais else return stripped string ------------ 
 	def getCiudad (text, pais, resourcesPath):
-		if (pais): # if pais get ciudades from pais and search them in text
+		if pais: # if pais get ciudades from pais and search them in text
 			reCities = Extractor.getSubjectCitiesString (pais, resourcesPath)
 			ciudad   = Extractor.getValueRE (f"({reCities})", text, re.I)
 		else:      # if no pais, get the substring without trailing spaces
 			reCiudad = r"\b(\w+(?:\s+\w+)*)\b"
 			results  = re.findall (reCiudad, text)
-			ciudad   = result[-1] if result [-1] else None
+			ciudad   = results [-1] if results [-1] else None
+
 		return ciudad
 
-#	def getCiudad (text, pais, resourcesPath):
-#		if (pais): # if pais get ciudades from pais and search them in text
-#			reCities = Extractor.getSubjectCitiesString (pais, resourcesPath)
-#			print ("+++DEBUG: cities: ", reCities)
-#			result = re.findall (reCities, text, re.I)
-#		else:      # if no pais, get the substring without trailing spaces
-#			reCiudad = r"\b(\w+(?:\s+\w+)*)\b"
-#			ciudad   = re.findall (reCiudad, text)
-
-		ciudad = result[-1] if result [-1] else None
-		return ciudad
-
-	def getPaisCiudad (text, resourcesPath):
+	def getCiudadPais (text, resourcesPath):
 		pais   = Extractor.getPais (text, resourcesPath)
-		print ("+++DEBUG: pais:", pais)
 		ciudad = Extractor.getCiudad (text, pais, resourcesPath)
-		return pais, ciudad
-			
+		return ciudad, pais
+
 	#------------------------------------------------------------------
 	# Extract 'placa' and 'pais'
 	#------------------------------------------------------------------
-	def getPlacaPais (text):
+	def getPlacaPais (text, resourcesPath):
 		result = {"placa":None, "pais":None}
 
 		text = text.upper ()
@@ -340,12 +334,15 @@ class Extractor:
 			return result
 
 		try:
-			rePlacaPais = r"(\w+)\W+(\w+)"
-			res = re.search (rePlacaPais, text)
-			result ["placa"] = res.group (1)
-			result ["pais"] = res.group (2)
+			pais             = Extractor.getPais (text, resourcesPath)
+			text             = text.replace (pais, "")   
+			#rePlacaPais01 = r"(\w+)\W+(\w+)"
+			#rePlacaPais      = r'^([A-Z0-9]+)[\s\-]*?(COLOMBIA|ECUADOR|PERU).*$'
+			rePlaca           = r'(\b[A-Z0-9]+(?:-[A-Z0-9]+)?\b)'
+			result ["placa"]  = Extractor.getValueRE (rePlaca, text)
+			result ["pais"]   = pais
 		except:
-			Utils.printException ("Extrayendo placa pais desde el texto:", text)
+			Utils.printException (f"Extrayendo placa pais desde el texto: '{text}'")
 		return result
 			
 
@@ -401,7 +398,8 @@ class Extractor:
 			reDate3 = rf'\b{reDay}{reWordSep}{reMonthTxt}{reWordSep}{reYear}\b' # 20 de Junio del 2023
 			reDate4 = rf'\b{reYear}{reSep}{reMonthNum}{reSep}{reDay}\b'         # 2023/12/31
 			reDate5 = rf'\b{reYear}{reSep}{reMonthTxt}{reSep}{reDay}\b'         # 2023/DICIEMBRE/31
-			reDateOptions = [reDate0, reDate1, reDate2, reDate3, reDate4, reDate5]
+			reDate6 = rf'\b{reDay}{reSep}{reMonthTxt}{reSep}{reYear}\b'         # 2023/DICIEMBRE/31
+			reDateOptions = [reDate0, reDate1, reDate2, reDate3, reDate4, reDate5, reDate6]
 
 			# Evaluate all reDates and select the one with results
 			results = [re.search (x, text, re.I) for (i, x) in enumerate (reDateOptions)]
@@ -419,6 +417,9 @@ class Extractor:
 				month  = result.group('month')
 			elif results [5]:
 				result = results [5]
+				month  = monthsList.index (result.group('month').upper()) + 1
+			elif results [6]:
+				result = results [6]
 				month  = monthsList.index (result.group('month').upper()) + 1
 			else:
 				printx (f"No existe fecha en texto '{text}'")

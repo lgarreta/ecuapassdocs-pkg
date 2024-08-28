@@ -1,4 +1,4 @@
-import os, json, re, sys, tempfile
+import os, json, re, sys, tempfile, datetime
 
 from traceback import format_exc as traceback_format_exc
 import traceback
@@ -11,6 +11,17 @@ from .resourceloader import ResourceLoader
 class Utils:
 	runningDir = None
 	message = ""   # Message sent by 'checkError' function
+
+	#------------------------------------------------------
+	# Format date string "DD-MM-YYYY" to Postgres "YYYY-MM-DD"
+	#------------------------------------------------------
+	def formatDateStringToPGDate (date_string):
+		if type (date_string) == datetime.datetime:
+			date_string = date_string.strftime ("%d-%m-%Y")
+
+		date_object    = datetime.datetime.strptime (date_string, "%d-%m-%Y").date()
+		formatted_date = date_object.strftime("%Y-%m-%d")
+		return formatted_date
 
 	#------------------------------------------------------
 	#-- Redirect stdout output to file
@@ -361,19 +372,36 @@ class Utils:
 		return pais, codigo
 
 	#----------------------------------------------------------------
-	# Not working for Peru
 	# Used in EcuapassDocs web
 	#----------------------------------------------------------------
-	def getCodigoPaisFromProcedimiento (empresa, procedimiento):
-		procedimientosBYZA = {"importacion":"CO", "exportacion":"EC"}
-		procedimiento = procedimiento.lower()
-		if empresa == "BYZA" and "importacion" in procedimiento :
-			return procedimientosBYZA ["importacion"]
-		elif empresa == "BYZA" and "exportacion" in procedimiento :
-			return procedimientosBYZA ["exportacion"]
-		else:
-			raise Exception (f"No se identificó código pais desde procedimiento '{procedimiento}'")
+	def getCodigoPaisFromPais (pais): #"COLOMBIA", "ECUADOR", "PERU"
+		try:
+			paises   = {"COLOMBIA":"CO", "ECUADOR":"EC", "PERU":"PE"}
+			return paises [pais.upper()]
+		except:
+			Utils.printException (f"Pais desconocido: '{pais}'") 
+			return None
 
+	def getPaisFromCodigoPais (paisCode):
+		try:
+			paisesCodes   = {"CO":"COLOMBIA", "EC":"ECUADOR", "PE":"PERU"}
+			return paisesCodes [paisCode.upper()]
+		except:
+			Utils.printException (f"Codigo Pais desconocido: '{paisCode}'") 
+			return None
+
+	#-------------------------------------------------------------------
+	# Get the number part from document number (e.g. COXXXX -> XXXX)
+	#-------------------------------------------------------------------
+	def getNumberFromDocNumber (docNumber):
+		pattern = r'^(CO|EC|PE)(\d+)$'
+
+		match = re.match (pattern, docNumber)
+		if match:
+			number = match.group(2)
+			return int (number)
+		else:
+			raise Exception ("Número de documento '{docNumber}' sin país")
 	#-------------------------------------------------------------------
 	# Return 'EXPORTACION' or 'IMPORTACION' according to 'pais' and 'empresa'
 	# Used in EcuapassDocs web
@@ -441,7 +469,9 @@ class Utils:
 	# Check if text contains word or it is not None or empty
 	#-----------------------------------------------------------
 	def isValidText (text):
-		if text != None or text.strip () != "":
-			return True
-		else:
+		if text == None:
 			return False
+		elif text.strip () == "":
+			return False
+		else:
+			return True

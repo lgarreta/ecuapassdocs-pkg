@@ -39,9 +39,17 @@ class ManifiestoLogitrans (ManifiestoInfo):
 		if tipo == "VEHICULO" and remolque ["placa"]:
 			return "TRACTOCAMION"
 		elif tipo == "VEHICULO" and not remolque ["placa"]:
-			return "CAMION"
+			return "CAMION"                                                                                                                                                                                                                                              
 		else:
 			return None
+	
+	#-- Try to convert certificado text to valid certificado string
+	#-- CR --> CRU
+	def formatCertificadoString (self, text, vehicleType):
+		certificadoString = super().formatCertificadoString (text, vehicleType)
+		certificadoString = certificadoString.replace ("CR-", "CRU-")
+		return certificadoString
+
 
 	#-- None for BYZA 
 	def getCargaDescripcion (self):

@@ -19,7 +19,6 @@
         "x": 400,
         "y": 88
 	},
-
     "numero": {
         "align": "left",
         "class": "input_numero",
@@ -40,7 +39,6 @@
         "x": 200,
         "y": 88
 	},
-
 	"txt0a": {
         "restrictions": [
             "readonly",
@@ -78,7 +76,6 @@
         "y": 94,
         "codebinField": "no"
     },
-
     "txt01": {
         "restrictions": [
             "hidden"
@@ -87,7 +84,7 @@
         "class": "input_numero",
         "ecudocsField": "01_Transportista",
         "font": "hidden",
-        "fontSize": "28px",
+        "fontSize": "26px",
         "height": 150,
         "maxChars": 100,
         "maxLines": 5,

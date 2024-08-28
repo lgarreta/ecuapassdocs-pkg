@@ -12,7 +12,7 @@ def main ():
 	args = sys.argv
 	fieldsJsonFile = args [1]
 	runningDir = os.getcwd ()
-	mainFields = Declaracion.getEcuapassFields (fieldsJsonFile, runningDir)
+	mainFields = Declaracion.extractEcuapassFields (fieldsJsonFile, runningDir)
 	Utils.saveFields (mainFields, fieldsJsonFile, "Results")
 
 #----------------------------------------------------------
@@ -22,7 +22,7 @@ class Declaracion:
 	resourcesPath = None
 
 	#-- Get data and value from document main fields
-	def getEcuapassFields (fieldsJsonFile, runningDir):
+	def extractEcuapassFields (fieldsJsonFile, runningDir):
 		Utils.runningDir    = runningDir      # Dir to copy and get images and data
 		Declaracion.resourcesPath = os.path.join (runningDir,"resources", "data_declaracion") 
 		ecudoc = {}		                     # Dic for Ecuappass document info
@@ -34,7 +34,7 @@ class Declaracion:
 			ecudoc ["01_Distrito"]      = "TULCAN||LOW"
 			
 			ecudoc ["02_Fecha_Emision"] = Declaracion.getFechaEmision (fields, "23_Fecha_Emision")
-			ecudoc ["03_Procedimiento"] = "IMPORTACION||LOW"
+			ecudoc ["03_TipoProcedimiento"] = "IMPORTACION||LOW"
 			ecudoc ["04_Numero_DTAI"]    = Declaracion.getNumeroDocumento (fields, "00b_Numero")
 			ecudoc ["05_Pais_Origen"]   = Declaracion.getPaisMercancia (fields, "09_Pais_Mercancia")
 
@@ -84,9 +84,9 @@ class Declaracion:
 	def getAduanaCiudadPais (fields, key):
 		aduana = {"pais": "||LOW", "ciudad": "||LOW"}
 		text = getValue (fields, key)
-		info = Extractor.extractCiudadPais (text, Declaracion.resourcesPath)
-		aduana ["pais"]   = info ["pais"] if info ["pais"] else "||LOW"
-		aduana ["ciudad"] = info ["ciudad"] if info ["ciudad"] else "||LOW"
+		ciudad, pais = Extractor.getCiudadPais (text, Declaracion.resourcesPath)
+		aduana ["pais"]   = Utils.checkLow (pais)
+		aduana ["ciudad"] = Utils.checkLow (ciudad)
 
 		return aduana
 

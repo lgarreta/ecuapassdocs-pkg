@@ -84,7 +84,8 @@ class EcuData:
 	}
 
 	configuracion = {
-		"dias_cartaportes_recientes" : 4
+		"dias_cartaportes_recientes" : 4,
+		"numero_documento_inicio" : 2000000
 	}
 
 

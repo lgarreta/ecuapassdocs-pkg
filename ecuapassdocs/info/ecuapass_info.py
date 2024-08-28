@@ -10,44 +10,59 @@ from .ecuapass_utils import Utils
 class EcuInfo:
 
 	def __init__ (self, docType, fieldsJsonFile, runningDir):
-		self.pais           = None       # Assigned after read the doc number
-		self.numero         = None       # Assigned after read the doc number
-
-		self.docType        = docType
+		self.docType              = docType
 		self.inputsParametersFile = Utils.getInputsParametersFile (docType)
 
 		self.fieldsJsonFile = fieldsJsonFile
 		self.runningDir     = runningDir
 
 		self.empresa        = self.getEmpresaInfo ()   # Overwritten per 'empresa'
-		#self.nombreEmpresa  = self.empresa ["id"]
 
 		self.resourcesPath  = os.path.join (runningDir, "resources", "data_cartaportes") 
 		self.fields         = json.load (open (fieldsJsonFile))
-		#self.fields ["jsonFile"]  = fieldsJsonFile
 		self.ecudoc         = {}
+
+		#-- Basic fields
+		self.numero         = self.getNumeroDocumento () # From docFields
+		self.pais           = self.getPaisDocumento ()   # From docFields
 
 	#------------------------------------------------------------------
 	# Update fields that depends of other fields
 	#------------------------------------------------------------------
-	def updateFieldsFromFields (self):
-		self.numero = self.getNumeroDocumento ()
-		self.pais   = Utils.getPaisFromDocNumber (self.numero)
+	def updateExtractedEcuapassFields (self):
+		#self.numero = self.getNumeroDocumento ()
+		#self.pais   = Utils.getPaisFromDocNumber (self.numero)
+		self.updateTipoProcedimientoFromFiels ()
 		self.updateDistritoFromFields ()
+
+	#-- Update tipo procedimiento (EXPO|INPO|TRANSITO) after knowing "Destino"
+	#-- Update fecha entrega (when transito)
+	def updateTipoProcedimientoFromFiels (self):
+		tipoProcedimiento = self.getTipoProcedimiento ()
+
+		procKeys = {
+			"CARTAPORTE": "05_TipoProcedimiento", 
+			"MANIFIESTO": "01_TipoProcedimiento", 
+			"DECLARACION": "03_TipoProcedimiento"
+		}
+		self.ecudoc [procKeys [self.docType]] = tipoProcedimiento
+
+		if self.docType == "CARTAPORTE":
+			self.ecudoc ["37_FechaEntrega"]   = self.getFechaEntrega ()
+
 
 	#-- Update distrito after knowing paisDestinatario
 	def updateDistritoFromFields (self):
-		distrito      = "TULCAN||LOW"
-		ecuapassField = None
-		paisDestino   = None
 		try:
-			# Get ecuapassField and paisDestino
-			if self.docType == "CARTAPORTE": 
-				ecuapassField, paisDestino = "01_Distrito", self.getPaisDestinatario ()
-			elif self.docType == "MANIFIESTO":
-				ecuapassField, paisDestino = "04_Distrito", self.getPaisDescarga ()
-			elif self.docType == "DECLARACION":
-				ecuapassField, paisDestino = "01_Distrito", self.getPaisDestinatario ()
+			distrito      = "TULCAN||LOW"
+			paisDestino   = self.getPaisDestinoDocumento ()
+
+			docKeys = {
+				"CARTAPORTE":  "01_Distrito",
+				"MANIFIESTO":  "04_Distrito",
+				"DECLARACION": "01_Distrito"
+			}
+			ecuapassField = docKeys [self.docType]
 
 			# Set distrito
 			if self.pais == "PERU":
@@ -65,8 +80,10 @@ class EcuInfo:
 	def getEmpresaInfo (self):
 		return None
 
+	#------------------------------------------------------
 	#-- Updated Ecuapass document fields with values ready to transmit
 	#-- Change names to codes for additional presition. Remove '||LOW'
+	#------------------------------------------------------
 	def updateEcuapassFile (self, ecuJsonFile):
 		ecuapassFields    = json.load (open (ecuJsonFile))
 		ecuapassFieldsUpd = self.updateEcuapassFields (ecuapassFields)
@@ -100,8 +117,10 @@ class EcuInfo:
 
 		return ecuapassFields
 
-
-	#-- For all types of documents (fixed for NTA and BYZA, check the others)
+	#------------------------------------------------------
+	#-- Get doc number from docFields (azrFields)
+	#-- For all types of docs (fixed for NTA and BYZA, check the others)
+	#------------------------------------------------------
 	def getNumeroDocumento (self):
 		text        = Utils.getValue (self.fields, "00b_Numero")
 		numero      = Extractor.getNumeroDocumento (text)
@@ -109,6 +128,12 @@ class EcuInfo:
 		codigo = Utils.getCodigoPais (numero)
 		self.fields ["00_Pais"] = {"value":codigo, "content":codigo}
 		return numero
+
+	#-- Return the document "pais" from docFields
+	def getPaisDocumento (self):
+		numero = self.getNumeroDocumento ()
+		pais = Utils.getPaisFromDocNumber (numero)
+		return pais
 
 	#-- Return updated PDF document fields
 	def getDocFields (self):
@@ -142,20 +167,25 @@ class EcuInfo:
 			return None
 
 	#-----------------------------------------------------------
-	#-- Return IMPORTACION or EXPORTACION
+	#-- IMPORTACION or EXPORTACION or TRANSITO (after paisDestino)
 	#-----------------------------------------------------------
 	def getTipoProcedimiento (self):
 		tipoProcedimiento = None
+		paisDestino = self.getPaisDestinoDocumento ()
 		try:
-			procedimientos    = {"CO":"IMPORTACION", "EC":"EXPORTACION", "PE":"IMPORTACION"}
-			numero            = self.getNumeroDocumento ()
-			codigoPais        = Utils.getCodigoPais (numero)
-			tipoProcedimiento = procedimientos [codigoPais]
-		except:
-			Utils.printException ("No se pudo determinar tipo de procedimiento (Importación/Exportación)")
-			tipoProcedimiento = "IMPORTACION||LOW"
+			if self.pais == "COLOMBIA" and paisDestino == "PERU":
+				return "TRANSITO"
+			else:
+				procedimientos    = {"CO":"IMPORTACION", "EC":"EXPORTACION", "PE":"IMPORTACION"}
+				numero            = self.getNumeroDocumento ()
+				codigoPais        = Utils.getCodigoPais (numero)
+				return procedimientos [codigoPais]
 
-		return tipoProcedimiento
+		except:
+			Utils.printException ("No se pudo determinar procedimiento (IMPO/EXPO/TRANSITO)")
+
+		return "IMPORTACION||LOW"
+
 
 	#-----------------------------------------------------------
 	# Get distrito according to 'empresa'
@@ -203,8 +233,7 @@ class EcuInfo:
 			text = text.replace ("$", "")
 
 			# Get ciudad from text and Search 'pais' in previos boxes
-			ciudadPais   = Extractor.extractCiudadPais (text, self.resourcesPath) 
-			ciudad, pais = ciudadPais ["ciudad"], ciudadPais ["pais"]
+			ciudad, pais   = Extractor.getCiudadPais (text, self.resourcesPath) 
 
 			info ["ciudad"], info ["pais"] = self.searchPaisPreviousBoxes (ciudad, pais)
 			if not info ["pais"]:

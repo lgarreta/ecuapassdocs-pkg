@@ -42,7 +42,7 @@
     "txt0a": {
         "align": "left", 
         "class": "input_numero", 
-        "ecudocsField": "0a_Pais", 
+        "ecudocsField": "00_Pais", 
         "font": "large", 
         "fontSize": "26px", 
         "height": 28, 
@@ -53,9 +53,10 @@
             "color=red"
         ], 
         "value": "", 
-        "width": 33, 
+        "width": 40, 
         "x": 720, 
-        "y": 75
+        "y": 75,
+        "codebinField": ""
     }, 
     "txt00": {
         "restrictions": [
@@ -73,7 +74,8 @@
         "value": "", 
         "width": 183, 
         "x": 867, 
-        "y": 75
+        "y": 75,
+        "codebinField": "no"
     }, 
     "txt01": {
         "restrictions": [
@@ -83,18 +85,19 @@
         "class": "input_general", 
         "ecudocsField": "01_Transportista", 
         "font": "normal", 
-        "fontSize": "14px", 
+        "fontSize": "26px", 
         "height": 124, 
         "maxChars": 50, 
         "maxLines": 4, 
         "value": "", 
         "width": 475, 
         "x": 52, 
-        "y": 147
+        "y": 147,
+        "codebinField": ""
     }, 
     "txt02": {
         "align": "left", 
-        "class": "input_empresa", 
+        "class": "input_cliente", 
         "ecudocsField": "02_Declarante", 
         "font": "normal", 
         "fontSize": "14px", 
@@ -103,12 +106,12 @@
         "maxLines": 4, 
         "value": "", 
         "width": 495, 
-        "x": 55, 
-        "y": 268
+        "x": 50, 
+        "y": 266
     }, 
     "txt03": {
         "align": "left", 
-        "class": "input_empresa", 
+        "class": "input_cliente", 
         "ecudocsField": "03_Remitente", 
         "font": "normal", 
         "fontSize": "14px", 
@@ -122,7 +125,7 @@
     }, 
     "txt04": {
         "align": "left", 
-        "class": "input_empresa", 
+        "class": "input_cliente", 
         "ecudocsField": "04_Destinatario", 
         "font": "normal", 
         "fontSize": "14px", 
@@ -136,7 +139,7 @@
     }, 
     "txt05": {
         "align": "left", 
-        "class": "input_empresa", 
+        "class": "input_cliente", 
         "ecudocsField": "05_Consignatario", 
         "font": "normal", 
         "fontSize": "14px", 
