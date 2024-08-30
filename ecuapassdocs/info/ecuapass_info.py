@@ -81,47 +81,11 @@ class EcuInfo:
 		return None
 
 	#------------------------------------------------------
-	#-- Updated Ecuapass document fields with values ready to transmit
-	#-- Change names to codes for additional presition. Remove '||LOW'
-	#------------------------------------------------------
-	def updateEcuapassFile (self, ecuJsonFile):
-		ecuapassFields    = json.load (open (ecuJsonFile))
-		ecuapassFieldsUpd = self.updateEcuapassFields (ecuapassFields)
-		ecuJsonFileUpd    = Utils.saveFields (ecuapassFieldsUpd, ecuJsonFile, "UPDATE")
-		return ecuapassFieldsUpd
-
-	def updateEcuapassFields (self, ecuapassFields):
-		print ("-- Updating Ecuapass fields...")
-		for key in ecuapassFields:
-			if ecuapassFields [key] is None:
-				continue
-
-			# Vehiculo
-			if "Tipo_Vehiculo" in key:
-				vehiculos    = {"SEMIRREMOLQUE":"SR", "TRACTOCAMION":"TC", "CAMION":"CA"}
-				ecuapassFields [key] = vehiculos [ecuapassFields[key]]
-
-			# Moneda
-			if "Moneda" in key:
-				ecuapassFields [key] = "USD"
-
-			# Embalaje
-			if "Embalaje" in key: 
-				embalaje = ecuapassFields [key].upper()
-				ecuapassFields [key] = Extractor.getCodeEmbalaje (embalaje)
-
-			# Remove confidence string ("||LOW")
-			value        = ecuapassFields [key] 
-			value        = value.split ("||")[0] if value else None
-			ecuapassFields [key] = value if value != "" else None
-
-		return ecuapassFields
-
-	#------------------------------------------------------
 	#-- Get doc number from docFields (azrFields)
 	#-- For all types of docs (fixed for NTA and BYZA, check the others)
 	#------------------------------------------------------
 	def getNumeroDocumento (self):
+		#print (f"+++ DEBUG: getNumeroDocumento: '{self.fields}'")
 		text        = Utils.getValue (self.fields, "00b_Numero")
 		numero      = Extractor.getNumeroDocumento (text)
 
@@ -301,21 +265,22 @@ class EcuInfo:
 			return None
 
 	#----------------------------------------------------------------
+	# Return Ecuapass docFields {key : {value:XXX, content:YYY}}
 	#-- Create ECUAPASSDOCS fields from document fields using input parameters
 	#----------------------------------------------------------------
-	def getEcuapassdocsFields (self):
+	def getEcuapassFormFields (self):
 		try:
 			inputsParams = ResourceLoader.loadJson ("docs", self.inputsParametersFile)
-			docFieldsAll = {}
+			formFields = {}
 			for key in inputsParams:
 				docField   = inputsParams [key]["ecudocsField"]
 				if docField == "" or "OriginalCopia" in docField:
 					continue
 				else:
 					value = self.getDocumentFieldValue (docField)
-					docFieldsAll [key] = value
+					formFields [key] = value
 
-			return docFieldsAll
+			return formFields
 		except Exception as e:
 			Utils.printException ("Creando campos de ECUAPASSDOCS")
 			return None
@@ -389,7 +354,7 @@ class EcuInfo:
 
 			# Marcas 
 			text = self.fields [marcasField]["value"]
-			bultosInfo ["marcas"] = "SIN MARCAS" if text == None else text
+			bultosInfo ["marcas"] = "SIN MARCAS" if text == "" else text
 
 			# Descripcion
 			descripcion = self.fields [descripcionField]["content"]

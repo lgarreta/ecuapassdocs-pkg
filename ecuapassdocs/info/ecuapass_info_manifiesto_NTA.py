@@ -17,7 +17,7 @@ def main ():
 	args = sys.argv
 	fieldsJsonFile = args [1]
 	runningDir = os.getcwd ()
-	mainFields = ManifiestoInfo.getEcuapassFields (fieldsJsonFile, runningDir)
+	mainFields = ManifiestoInfo.extractEcuapassFields (fieldsJsonFile, runningDir)
 	Utils.saveFields (mainFields, fieldsJsonFile, "Results")
 
 #----------------------------------------------------------

@@ -187,13 +187,6 @@ class CartaporteInfo (EcuInfo):
 		Utils.redirectOutput ("log-extraction-cartaporte.log", logFile, stdoutOrg)
 		return (self.ecudoc)
 
-#	#------------------------------------------------------------------
-#	# Update fields that depends of other fields
-#	#------------------------------------------------------------------
-#	def updateExtractedEcuapassFields (self):
-#		self.numero = self.getNumeroDocumento ()
-#		self.pais   = Utils.getPaisFromDocNumber (self.numero)
-
 	#------------------------------------------------------------------
 	#-- First level functions for each Ecuapass field
 	#------------------------------------------------------------------

@@ -18,7 +18,7 @@ def main ():
 	fieldsJsonFile = args [1]
 	runningDir = os.getcwd ()
 	CartaporteInfo = CartaporteByza (fieldsJsonFile, runningDir)
-	mainFields = CartaporteInfo.getEcuapassFields ()
+	mainFields = CartaporteInfo.extractEcuapassFields ()
 	Utils.saveFields (mainFields, fieldsJsonFile, "Results")
 
 #----------------------------------------------------------

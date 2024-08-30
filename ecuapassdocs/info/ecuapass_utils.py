@@ -126,6 +126,7 @@ class Utils:
 	def saveFields (fieldsDict, filename, suffixName):
 		prefixName	= filename.split(".")[0]
 		outFilename = f"{prefixName}-{suffixName}.json"
+		print (f"+++ DEBUG: saveFields '{outFilename}'")
 		with open (outFilename, "w") as fp:
 			json.dump (fieldsDict, fp, indent=4, default=str)
 		return outFilename
@@ -447,15 +448,16 @@ class Utils:
 		return settings
 
 	#-----------------------------------------------------------
-	# Extract field info from azure fields using info clases (e.g.
-	# CartaporteBiza
+	# Get ecuField value obtained from docFields
+	# CLIENTS: DocsWeb for saving entities, dates,...
 	#-----------------------------------------------------------
 	def getEcuapassFieldInfo (INFOCLASS, fieldName, docFields):
 		jsonFieldsPath, runningDir = Utils.createTemporalJson (docFields)
 		docInfo           = INFOCLASS (jsonFieldsPath, runningDir)
-		ecuapassFields    = docInfo.getEcuapassFields ()
-		ecuapassFieldsUpd = docInfo.updateEcuapassFields (ecuapassFields)
-		fieldInfo         = ecuapassFieldsUpd [fieldName]
+		ecuapassFields    = docInfo.extractEcuapassFields ()
+		ecuapassFields    = Utils.removeConfidenceString (ecuapassFields)
+		print ("+++ DEBUG: ecuapassFields '{ecuapassFields}'")
+		fieldInfo         = ecuapassFields [fieldName]
 		return fieldInfo
 
 	def createTemporalJson (docFields):
